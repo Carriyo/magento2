@@ -1,0 +1,15 @@
+{
+    "name": "carriyo/module-shipment",
+    "description": "This module integrates your e-commerce with Carriyo platform.",
+    "type": "magento2-module",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "Carriyo\\Shipment\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    },
+    "version": "1.0.0-beta"
+}

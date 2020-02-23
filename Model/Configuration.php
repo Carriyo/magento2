@@ -1,0 +1,266 @@
+<?php
+/**
+ * Copyright © Carriyo. All rights reserved.
+ * https://www.carriyo.com | info@carriyo.com
+ */
+
+namespace Carriyo\Shipment\Model;
+
+
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Shipping\Model\Config;
+use Magento\Store\Model\StoreManagerInterface;
+
+/**
+ * Class Configuration
+ * @package Carriyo\Shipment\Model
+ */
+class Configuration
+{
+    const MODULE_NAME = 'Carriyo_Shipment';
+
+    //= General
+    const CONFIG_PATH_ACTIVE = 'carriyo/general/active';
+
+    //= API Credentials
+    const CONFIG_PATH_API_KEY = 'carriyo/api_credentials/api_key';
+    const CONFIG_PATH_GRANT_TYPE = 'carriyo/api_credentials/grant_type';
+    const CONFIG_PATH_CLIENT_ID = 'carriyo/api_credentials/client_id';
+    const CONFIG_PATH_CLIENT_SECRET = 'carriyo/api_credentials/client_secret';
+    const CONFIG_PATH_AUDIENCE = 'carriyo/api_credentials/audience';
+
+    //= API Endpoints
+    const CONFIG_PATH_API_URL = 'carriyo/api_endpoints/api_url';
+    const CONFIG_PATH_API_OAUTH_URL = 'carriyo/api_endpoints/api_oauth_url';
+
+    //= Pickup Address
+    const CONFIG_PATH_CONTACT_NAME = 'carriyo/pickup_address/contact_name';
+    const CONFIG_PATH_CONTACT_PHONE = 'carriyo/pickup_address/contact_phone';
+    const CONFIG_PATH_ADDRESS = 'carriyo/pickup_address/address1';
+    const CONFIG_PATH_CITY = 'carriyo/pickup_address/city';
+    const CONFIG_PATH_STATE = 'carriyo/pickup_address/state';
+    const CONFIG_PATH_COUNTRY = 'carriyo/pickup_address/country';
+
+    // = Shipping Method Map
+    const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/shipping_method_map/shipping_methods';
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $configReader;
+
+    /**
+     * @var EncryptorInterface
+     */
+    private $decryptor;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var ModuleListInterface
+     */
+    private $moduleList;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var Config
+     */
+    private $shippingModelConfig;
+
+    /**
+     * @method __construct
+     * @param ScopeConfigInterface $configReader
+     * @param EncryptorInterface $decryptor
+     * @param StoreManagerInterface $storeManager
+     * @param ModuleListInterface $moduleList
+     * @param Config $shippingModelConfig
+     * @param ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(
+        ScopeConfigInterface $configReader,
+        EncryptorInterface $decryptor,
+        StoreManagerInterface $storeManager,
+        ModuleListInterface $moduleList,
+        Config $shippingModelConfig,
+        ScopeConfigInterface $scopeConfig
+    )
+    {
+        $this->configReader = $configReader;
+        $this->decryptor = $decryptor;
+        $this->storeManager = $storeManager;
+        $this->moduleList = $moduleList;
+        $this->shippingModelConfig = $shippingModelConfig;
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_API_KEY);
+    }
+
+    /**
+     * @return string
+     */
+    public function getGrantType()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_GRANT_TYPE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientId()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_CLIENT_ID);
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientSecret()
+    {
+        return (string)$this->decryptor->decrypt(
+            $this->configReader->getValue(self::CONFIG_PATH_CLIENT_SECRET)
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getAudience()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_AUDIENCE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return (string) $this->configReader->getValue(self::CONFIG_PATH_API_URL);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOauthUrl()
+    {
+        return (string) $this->configReader->getValue(self::CONFIG_PATH_API_OAUTH_URL);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactName()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_CONTACT_NAME);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactPhone()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_CONTACT_PHONE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_ADDRESS);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCity()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_CITY);
+    }
+
+    /**
+     * @return string
+     */
+    public function getState()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_STATE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountry()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_COUNTRY);
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingMethods()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_SHIPPING_METHODS);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return (bool) $this->configReader->getValue(self::CONFIG_PATH_ACTIVE);
+    }
+
+    /**
+     * @param $code
+     * @return mixed|string
+     */
+    public function getDeliveryType($code)
+    {
+        $deliveryType = 'STANDARD';
+
+        $shippingMap = [];
+        foreach (explode(",", $this->getShippingMethods()) as $shipping) {
+            $shippingValues = explode("=", $shipping);
+            $shippingMap[$shippingValues[0]] = $shippingValues[1];
+        }
+
+        if (array_key_exists($code, $this->getActiveShippingMethod())) {
+            $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
+        }
+
+        return $deliveryType;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveShippingMethod()
+    {
+        $activeCarriers = $this->shippingModelConfig->getActiveCarriers();
+        $methods = array();
+        foreach ($activeCarriers as $shippingCode => $shippingModel) {
+            if ($carrierMethods = $shippingModel->getAllowedMethods()) {
+                foreach ($carrierMethods as $methodCode => $method) {
+                    $code = $shippingCode . '_' . $methodCode;
+                    $carrierTitle = $this->scopeConfig->getValue('carriers/' . $shippingCode . '/title');
+                    $methods[$code] = $carrierTitle;
+                }
+            }
+        }
+        return $methods;
+    }
+}
