@@ -34,6 +34,11 @@
 					<comment/>
 					<validate>required-entry validate-no-html-tags</validate>
 				</field>
+				<field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
+					<label>Tenant ID</label>
+					<comment>Have in mind that this field is case sensitive.</comment>
+					<validate>required-entry validate-no-html-tags</validate>
+				</field>
 				<field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
 					<label>Client ID</label>
 					<comment/>
