@@ -10,8 +10,7 @@
 		<carriyo>
 			<api_credentials>
 				<api_key/>
-				<grant_type>client_credentials</grant_type>
-				<client_id/>
+				<tenant_id/>
 				<client_secret/>
 				<audience/>
 			</api_credentials>
