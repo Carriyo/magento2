@@ -13,6 +13,7 @@
 				<tenant_id/>
 				<client_secret/>
 				<audience/>
+				<merchant/>
 			</api_credentials>
 			<pickup_address>
 				<contact_name/>
