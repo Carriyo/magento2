@@ -67,6 +67,7 @@ class Client extends AbstractHttp
             }
 
             $body = [
+                'merchant' => $this->configuration->getMerchant(),
                 'references' => [
                     'partner_order_reference' => $order->getEntityId()
                 ],

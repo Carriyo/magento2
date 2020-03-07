@@ -30,6 +30,7 @@ class Configuration
     const CONFIG_PATH_CLIENT_ID = 'carriyo/api_credentials/client_id';
     const CONFIG_PATH_CLIENT_SECRET = 'carriyo/api_credentials/client_secret';
     const CONFIG_PATH_AUDIENCE = 'carriyo/api_credentials/audience';
+    const CONFIG_PATH_MERCHANT = 'carriyo/api_credentials/merchant';
 
     //= API Endpoints
     const CONFIG_PATH_API_URL = 'carriyo/api_endpoints/api_url';
@@ -150,6 +151,14 @@ class Configuration
     public function getAudience()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_AUDIENCE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMerchant()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_MERCHANT);
     }
 
     /**
