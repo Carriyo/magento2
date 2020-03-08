@@ -26,10 +26,11 @@ class Configuration
 
     //= API Credentials
     const CONFIG_PATH_API_KEY = 'carriyo/api_credentials/api_key';
-    const CONFIG_PATH_GRANT_TYPE = 'carriyo/api_credentials/grant_type';
+    const CONFIG_PATH_TENANT_ID = 'carriyo/api_credentials/tenant_id';
     const CONFIG_PATH_CLIENT_ID = 'carriyo/api_credentials/client_id';
     const CONFIG_PATH_CLIENT_SECRET = 'carriyo/api_credentials/client_secret';
     const CONFIG_PATH_AUDIENCE = 'carriyo/api_credentials/audience';
+    const CONFIG_PATH_MERCHANT = 'carriyo/api_credentials/merchant';
 
     //= API Endpoints
     const CONFIG_PATH_API_URL = 'carriyo/api_endpoints/api_url';
@@ -115,7 +116,15 @@ class Configuration
      */
     public function getGrantType()
     {
-        return (string)$this->configReader->getValue(self::CONFIG_PATH_GRANT_TYPE);
+        return 'client_credentials';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTenantId()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_TENANT_ID);
     }
 
     /**
@@ -142,6 +151,14 @@ class Configuration
     public function getAudience()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_AUDIENCE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMerchant()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_MERCHANT);
     }
 
     /**

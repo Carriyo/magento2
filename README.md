@@ -31,6 +31,32 @@ This module integrates your ecommerce with Carriyo platform.
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
 
+## Specifications
+
+The following fields can be find in
+`Stores -> Configuration -> Carriyo -> Settings`
+
+ - API Credentials
+	- Api Key - (required)
+	- Tenant ID - (required) Have in mind that this field is case sensitive.
+	- Client ID - (required)
+	- Client Secret - (required)
+	- Audience - (required) 
+	- Merchant (Optional) - (optional)
+ -  API Endpoints
+	- Api URL - (required) The Carriyo API url
+	- Api OAuth URL - (required) The Carriyo autentication url
+ -  Pickup Address
+	- Contact Name - (required)
+	- Contact Phone - (required)
+	- Address - (required)
+	- City - (required)
+	- State - (required)
+	- Country - (required)
+ -  Shipping Method Map
+	- Shipping Methods - (required) A map between your sipping methods labels and Carriyo shipping type. Exp `Flat Rate=STANDARD,Free Shipping=EXPRESS`
+
+
 ### Running in local environment
 In order to run this environment please make sure you have `docker` and `docker-compose` installed.
 

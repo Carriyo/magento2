@@ -67,6 +67,7 @@ class Client extends AbstractHttp
             }
 
             $body = [
+                'merchant' => $this->configuration->getMerchant(),
                 'references' => [
                     'partner_order_reference' => $order->getEntityId()
                 ],
@@ -120,7 +121,7 @@ class Client extends AbstractHttp
                 'x-api-key' => $this->configuration->getApiKey(),
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->oauth->getAccessToken(),
-                'tenant-id' => 'DEMO'
+                'tenant-id' => $this->configuration->getTenantId()
             ];
         }
     }

@@ -29,9 +29,9 @@
 					<comment/>
 					<validate>required-entry validate-no-html-tags</validate>
 				</field>
-				<field id="grant_type" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Grant Type</label>
-					<comment/>
+				<field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
+					<label>Tenant ID</label>
+					<comment>Have in mind that this field is case sensitive.</comment>
 					<validate>required-entry validate-no-html-tags</validate>
 				</field>
 				<field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
@@ -50,6 +50,11 @@
 					<label>Audience</label>
 					<comment/>
 					<validate>required-entry validate-no-html-tags</validate>
+				</field>
+				<field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
+					<label>Merchant (Optional)</label>
+					<comment/>
+					<validate>validate-no-html-tags</validate>
 				</field>
 			</group>
 			<group id="api_endpoints" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label">
