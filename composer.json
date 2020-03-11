@@ -11,6 +11,6 @@
             "registration.php"
         ]
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "dev",
     "version": "1.0.1-beta"
 }
