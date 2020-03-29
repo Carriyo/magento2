@@ -107,7 +107,8 @@ class Client extends AbstractHttp
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $response = $exception->getResponse();
+            $message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['message'];
+            return ['errors' => [$message]];
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             return [
                 'errors' => ['Error trying to reach Carriyo, please create the shipment manually']
