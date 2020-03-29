@@ -67,7 +67,6 @@ class Client extends AbstractHttp
             }
 
             $body = [
-                'merchant' => $this->configuration->getMerchant(),
                 'references' => [
                     'partner_order_reference' => $order->getEntityId()
                 ],
@@ -101,10 +100,15 @@ class Client extends AbstractHttp
                 ]
             ];
 
+            if (!empty($this->configuration->getMerchant())) {
+                $body['merchant'] = $this->configuration->getMerchant();
+            }
+
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $response = $exception->getResponse();
+            $message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['message'];
+            return ['errors' => [$message]];
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             return [
                 'errors' => ['Error trying to reach Carriyo, please create the shipment manually']
