@@ -67,7 +67,6 @@ class Client extends AbstractHttp
             }
 
             $body = [
-                'merchant' => $this->configuration->getMerchant(),
                 'references' => [
                     'partner_order_reference' => $order->getEntityId()
                 ],
@@ -100,6 +99,10 @@ class Client extends AbstractHttp
                     'country' => 'AE',
                 ]
             ];
+
+            if (!empty($this->configuration->getMerchant())) {
+                $body['merchant'] = $this->configuration->getMerchant();
+            }
 
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
