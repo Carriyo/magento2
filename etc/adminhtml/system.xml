@@ -53,7 +53,7 @@
 				</field>
 				<field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
 					<label>Merchant (Optional)</label>
-					<comment/>
+					<comment>* Specify value if the tenant is merchant enabled</comment>
 					<validate>validate-no-html-tags</validate>
 				</field>
 			</group>
