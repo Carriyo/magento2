@@ -42,9 +42,10 @@ class Client extends AbstractHttp
 
     /**
      * @param OrderInterface $order
+     * @param \Magento\Sales\Api\Data\ShipmentInterface $shipment
      * @return array|bool|float|int|string|null
      */
-    public function send(OrderInterface $order)
+    public function send(OrderInterface $order, $shipment)
     {
         $response = null;
         try {
@@ -54,11 +55,11 @@ class Client extends AbstractHttp
             $paymentMethod = $payment->getMethod();
 
             $items = [];
-            foreach ($order->getItems() as $item) {
+            foreach ($shipment->getItems() as $item) {
                 $items[] = [
                     'sku' => $item->getSku(),
                     'description' => $item->getName(),
-                    'quantity' => (float)$item->getQtyOrdered(),
+                    'quantity' => (float)$item->getQty(),
                     'price' => [
                         'amount' => (float)$item->getPrice(),
                         'currency' => $order->getOrderCurrencyCode()
@@ -68,7 +69,8 @@ class Client extends AbstractHttp
 
             $body = [
                 'references' => [
-                    'partner_order_reference' => $order->getEntityId()
+                    'partner_order_reference' => $order->getIncrementId(),
+                    'partner_shipment_reference' => $shipment->getIncrementId(),
                 ],
                 'payment' => [
                     'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',

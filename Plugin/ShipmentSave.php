@@ -65,16 +65,6 @@ class ShipmentSave
     private $trackFactory;
 
     /**
-     * @var string
-     */
-    private $carriyoTrackNumber;
-
-    /**
-     * @var string
-     */
-    private $carrierName;
-
-    /**
      * ShipmentSave constructor.
      *
      * @param Configuration $configuration
@@ -109,38 +99,6 @@ class ShipmentSave
 
     /**
      * @param Save $subject
-     * @param \Closure $proceed
-     * @return mixed
-     */
-    public function aroundExecute(
-        Save $subject,
-        \Closure $proceed
-    )
-    {
-
-        if (!$this->configuration->isActive()) {
-            return $proceed();
-        }
-
-        $messageManager = $this->context->getMessageManager();
-        $order = $this->orderRepository->get($subject->getRequest()->getParam('order_id'));
-        $response = $this->carriyoClient->send($order);
-
-        if (array_key_exists('errors', $response)) {
-            $messageManager->addWarningMessage($response['errors'][0]);
-        } else {
-            $this->carriyoTrackNumber = $response['shipment_id'];
-            $this->carrierName = $response['carrier_account']['carrier_account_name'];
-            $messageManager->addSuccessMessage(
-                'Track your shipment: ' . $response['shipment_id'] . ' on Carriyo dashboard.'
-            );
-        }
-
-        return $proceed();
-    }
-
-    /**
-     * @param Save $subject
      * @param $result
      * @return mixed
      */
@@ -154,19 +112,34 @@ class ShipmentSave
         }
 
         try {
-            $order = $this->orderRepository->get($subject->getRequest()->getParam('order_id'));;
+            $messageManager = $this->context->getMessageManager();
+            $order = $this->orderRepository->get($subject->getRequest()->getParam('order_id'));
             /** @var Collection $collection */
             $collection = $order->getShipmentsCollection();
             $shipment = $this->shipmentRepository
-                ->get($collection->getFirstItem()->getData('entity_id'));
+                ->get($collection->getLastItem()->getData('entity_id'));
 
-            $track = $this->trackFactory->create();
-            $track->setCarrierCode('custom');
-            $track->setTitle('CARRIYO-' . $this->carrierName);
-            $track->setTrackNumber($this->carriyoTrackNumber);
+            $response = $this->carriyoClient->send($order, $shipment);
 
-            $shipment->addTrack($track);
-            $this->shipmentRepository->save($shipment);
+            if (!array_key_exists('errors', $response)) {
+
+                $track = $this->trackFactory->create();
+                $track->setCarrierCode('custom');
+                $track->setTitle('CARRIYO-' . $response['carrier_account']['carrier_account_name']);
+                $track->setTrackNumber($response['shipment_id']);
+
+                $shipment->addTrack($track);
+                $this->shipmentRepository->save($shipment);
+
+                $messageManager->addSuccessMessage(
+                    'Track your shipment: ' . $response['shipment_id'] . ' on Carriyo dashboard.'
+                );
+            }
+
+            if (array_key_exists('errors', $response)) {
+                $messageManager->addWarningMessage($response['errors'][0]);
+            }
+
         } catch (\Exception $e) {
         }
 
