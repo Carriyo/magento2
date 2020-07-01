@@ -26,7 +26,7 @@ This module integrates your ecommerce with Carriyo platform.
 ### Type 2: Composer
 
  - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require carriyo/module-shipment:"^1.1@beta"`
+ - Install the module composer by running `composer require carriyo/module-shipment:"^1.2@beta"`
  - enable the module by running `php bin/magento module:enable Carriyo_Shipment`
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
