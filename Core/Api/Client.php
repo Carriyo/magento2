@@ -74,8 +74,8 @@ class Client extends AbstractHttp
                 ],
                 'payment' => [
                     'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',
-                    'total_amount' => $payment->getAmountOrdered(),
-                    'pending_amount' => $payment->getAmountOrdered(),
+                    'total_amount' => $order->getGrandTotal(),
+                    'pending_amount' => $paymentMethod === 'cashondelivery' ? $payment->getAmountOrdered() : 0,
                     'currency' => $order->getOrderCurrencyCode()
                 ],
                 'delivery' => [
@@ -109,8 +109,8 @@ class Client extends AbstractHttp
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['message'];
-            return ['errors' => [$message]];
+            $message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['errors'];
+            return ['errors' => $message];
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             return [
                 'errors' => ['Error trying to reach Carriyo, please create the shipment manually']

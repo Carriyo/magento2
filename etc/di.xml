@@ -7,6 +7,10 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 	<type name="Magento\Shipping\Controller\Adminhtml\Order\Shipment\Save">
-		<plugin disabled="false" name="Carriyo_Shipment_Plugin_ShipmentSave" sortOrder="10" type="Carriyo\Shipment\Plugin\ShipmentSave"/>
+		<plugin disabled="true" name="Carriyo_Shipment_Plugin_ShipmentSave" sortOrder="10" type="Carriyo\Shipment\Plugin\ShipmentSave"/>
+	</type>
+
+	<type name="Magento\Shipping\Block\Adminhtml\View">
+		<plugin disabled="false" name="Carriyo_Shipment_Plugin_View" sortOrder="15" type="Carriyo\Shipment\Plugin\View"/>
 	</type>
 </config>
