@@ -75,7 +75,7 @@ class Client extends AbstractHttp
                 'payment' => [
                     'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',
                     'total_amount' => $order->getGrandTotal(),
-                    'pending_amount' => $paymentMethod === 'cashondelivery' ? $payment->getAmountOrdered() : 0,
+                    'pending_amount' => $paymentMethod === 'cashondelivery' ? $order->getGrandTotal() : 0,
                     'currency' => $order->getOrderCurrencyCode()
                 ],
                 'delivery' => [
