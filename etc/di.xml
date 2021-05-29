@@ -13,4 +13,8 @@
 	<type name="Magento\Shipping\Block\Adminhtml\View">
 		<plugin disabled="false" name="Carriyo_Shipment_Plugin_View" sortOrder="15" type="Carriyo\Shipment\Plugin\View"/>
 	</type>
+
+	<type name="Magento\Sales\Model\Order">
+		<plugin name="coupon_uses_increment_plugin" type="Carriyo\Shipment\Plugin\CreateOrderPlugin" sortOrder="26"/>
+	</type>
 </config>

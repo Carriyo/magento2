@@ -12,7 +12,6 @@
 				<api_key/>
 				<tenant_id/>
 				<client_secret/>
-				<audience/>
 				<merchant/>
 			</api_credentials>
 			<pickup_address>

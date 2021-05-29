@@ -46,15 +46,10 @@
 					<config_path>carriyo/api_credentials/client_secret</config_path>
 					<validate>required-entry validate-no-html-tags</validate>
 				</field>
-				<field id="audience" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Audience</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
 				<field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Merchant (Optional)</label>
+					<label>Merchant</label>
 					<comment>* Specify value if the tenant is merchant enabled</comment>
-					<validate>validate-no-html-tags</validate>
+					<validate>required-entry validate-no-html-tags</validate>
 				</field>
 			</group>
 			<group id="api_endpoints" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label">
