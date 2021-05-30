@@ -187,7 +187,7 @@ class Client extends AbstractHttp
             ];
 
             if (!empty($this->configuration->getMerchant())) {
-                // $body['merchant'] = $this->configuration->getMerchant();
+                 $body['merchant'] = $this->configuration->getMerchant();
             }
 
             $response = $this->getClient()

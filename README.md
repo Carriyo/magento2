@@ -41,7 +41,7 @@ The following fields can be find in
 	- Tenant ID - (required) Have in mind that this field is case sensitive.
 	- Client ID - (required)
 	- Client Secret - (required)
-	- Merchant (Optional) - (optional)
+	- Merchant  - (required)
  -  API Endpoints
 	- Api URL - (required) The Carriyo API url
 	- Api OAuth URL - (required) The Carriyo autentication url

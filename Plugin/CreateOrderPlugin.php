@@ -25,14 +25,16 @@ class CreateOrderPlugin
      * @var Helper
      */
     private $helper;
+
     /**
      * @param UpdateCouponUsages $updateCouponUsages
      */
     public function __construct(
         Helper $helper,
         LoggerInterface $logger
-    ) {
-        $this->helper=$helper;
+    )
+    {
+        $this->helper = $helper;
         $this->logger = $logger;
     }
 
@@ -45,8 +47,6 @@ class CreateOrderPlugin
      */
     public function afterPlace(Order $subject, Order $result): Order
     {
-        $this->logger->debug('plugin invoked----order');
-
         $this->helper->sendOrderDetails($subject, $result);
         return $subject;
     }
