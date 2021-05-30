@@ -17,4 +17,5 @@
 	<type name="Magento\Sales\Model\Order">
 		<plugin name="coupon_uses_increment_plugin" type="Carriyo\Shipment\Plugin\CreateOrderPlugin" sortOrder="26"/>
 	</type>
+
 </config>

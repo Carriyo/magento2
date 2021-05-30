@@ -14,17 +14,14 @@
 				<client_secret/>
 				<merchant/>
 			</api_credentials>
-			<pickup_address>
-				<contact_name/>
-				<contact_phone/>
-				<address1/>
-				<city/>
-				<state/>
-				<country>AE</country>
-			</pickup_address>
 			<shipping_method_map>
 				<shipping_methods/>
 			</shipping_method_map>
+			<order_status_map>
+				<order_status>
+					booked=processing,shipped=processing,delivered=complete
+				</order_status>
+			</order_status_map>
 		</carriyo>
 	</default>
 </config>

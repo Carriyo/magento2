@@ -42,9 +42,12 @@ class Configuration
     const CONFIG_PATH_CITY = 'carriyo/pickup_address/city';
     const CONFIG_PATH_STATE = 'carriyo/pickup_address/state';
     const CONFIG_PATH_COUNTRY = 'carriyo/pickup_address/country';
+    const CONFIG_PATH_LOCATION_CODE = 'carriyo/pickup_address/location_code';
 
     // = Shipping Method Map
     const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/shipping_method_map/shipping_methods';
+
+    const CONFIG_PATH_STATUS_MAP = 'carriyo/order_status_map/order_status';
 
     /**
      * @var ScopeConfigInterface
@@ -180,6 +183,14 @@ class Configuration
     /**
      * @return string
      */
+    public function getLocationCode()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_LOCATION_CODE);
+    }
+
+    /**
+     * @return string
+     */
     public function getContactPhone()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_CONTACT_PHONE);
@@ -223,6 +234,14 @@ class Configuration
     public function getShippingMethods()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_SHIPPING_METHODS);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderStatusMap()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_STATUS_MAP);
     }
 
     /**
@@ -273,5 +292,19 @@ class Configuration
             }
         }
         return $methods;
+    }
+
+    /**
+     * @param $carriyoStatus
+     * @return mixed
+     */
+    public function getMagentoStatus($carriyoStatus)
+    {
+        $orderStatusMap = [];
+        foreach (explode(",", $this->getOrderStatusMap()) as $orderStatus) {
+            $orderStatusValues = explode("=", $orderStatus);
+            $orderStatusMap[trim($orderStatusValues[0])] = trim($orderStatusValues[1]);
+        }
+        return $orderStatusMap[$carriyoStatus];
     }
 }

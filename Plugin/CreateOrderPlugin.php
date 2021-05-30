@@ -8,7 +8,6 @@ namespace Carriyo\Shipment\Plugin;
 
 use Carriyo\Shipment\Model\Helper;
 use Magento\Sales\Model\Order;
-use Magento\SalesRule\Model\Coupon\UpdateCouponUsages;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -26,15 +25,22 @@ class CreateOrderPlugin
      */
     private $helper;
 
+    private $registry;
+
     /**
-     * @param UpdateCouponUsages $updateCouponUsages
+     * CreateOrderPlugin constructor.
+     * @param Helper $helper
+     * @param \Magento\Framework\Registry $registry
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Helper $helper,
+        \Magento\Framework\Registry $registry,
         LoggerInterface $logger
     )
     {
         $this->helper = $helper;
+        $this->registry = $registry;
         $this->logger = $logger;
     }
 
@@ -47,7 +53,9 @@ class CreateOrderPlugin
      */
     public function afterPlace(Order $subject, Order $result): Order
     {
-        $this->helper->sendOrderDetails($subject, $result);
+        $shipmentId = $this->helper->sendOrderDetails($subject);
+        $subject->addCommentToStatusHistory("Carriyo Draft Shipment Id : " . $shipmentId);
+        $this->registry->register('orderSentToCarriyo', 1);
         return $subject;
     }
 }
