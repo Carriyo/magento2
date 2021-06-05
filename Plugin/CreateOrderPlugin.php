@@ -6,9 +6,9 @@
 
 namespace Carriyo\Shipment\Plugin;
 
+use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Helper;
 use Magento\Sales\Model\Order;
-use Psr\Log\LoggerInterface;
 
 /**
  * Increments number of coupon usages after placing order.
@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 class CreateOrderPlugin
 {
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
 
@@ -31,12 +31,12 @@ class CreateOrderPlugin
      * CreateOrderPlugin constructor.
      * @param Helper $helper
      * @param \Magento\Framework\Registry $registry
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      */
     public function __construct(
         Helper $helper,
         \Magento\Framework\Registry $registry,
-        LoggerInterface $logger
+        Logger $logger
     )
     {
         $this->helper = $helper;
@@ -45,16 +45,21 @@ class CreateOrderPlugin
     }
 
     /**
-     *
      * @param Order $subject
      * @param Order $result
      * @return Order
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function afterPlace(Order $subject, Order $result): Order
     {
-        $shipmentId = $this->helper->sendOrderDetails($subject);
-        $subject->addCommentToStatusHistory("Carriyo Draft Shipment Id : " . $shipmentId);
+        try {
+            $shipmentId = $this->helper->sendOrderDetails($subject);
+            if (!empty($shipmentId)) {
+                $subject->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
+            }
+        } catch (\Exception $e) {
+            $subject->addCommentToStatusHistory($e->getMessage());
+        }
         $this->registry->register('orderSentToCarriyo', 1);
         return $subject;
     }

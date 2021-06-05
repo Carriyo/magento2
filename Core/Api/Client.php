@@ -7,11 +7,11 @@
 namespace Carriyo\Shipment\Core\Api;
 
 
+use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Configuration;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Address;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Client
@@ -26,7 +26,7 @@ class Client extends AbstractHttp
     private $oauth;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
 
@@ -40,7 +40,7 @@ class Client extends AbstractHttp
         Configuration $configuration,
         SerializerInterface $serializer,
         OAuth $oauth,
-        LoggerInterface $logger
+        Logger $logger
     )
     {
         parent::__construct($configuration, $serializer);
@@ -59,12 +59,12 @@ class Client extends AbstractHttp
         try {
             /** @var Address $shippingAddress */
             $body = $this->getRequestBody($order);
-            $this->logger->debug('Carriyo Request' . print_r($body, 1));
+            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments/draft', ['json' => $body]);
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->debug('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
+            $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -78,12 +78,12 @@ class Client extends AbstractHttp
     {
         $response = null;
         try {
-            $this->logger->debug('Carriyo Cancel Request' . $orderId);
+            $this->logger->info("Carriyo Cancel Request " . $orderId);
             $response = $this->getClient()
                 ->patch($this->configuration->getUrl() . "/shipments/{$orderId}/cancel");
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->debug('Carriyo sendOrderCancel Exception ' . $exception->getMessage());
+            $this->logger->info('Carriyo sendOrderCancel Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -99,12 +99,12 @@ class Client extends AbstractHttp
         try {
             /** @var Address $shippingAddress */
             $body = $this->getRequestBody($order);
-            $this->logger->debug('Carriyo Request' . print_r($body, 1));
+            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
             $response = $this->getClient()
                 ->patch($this->configuration->getUrl() . '/shipments/draft/' . $order->getIncrementId(), ['json' => $body]);
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->debug('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
+            $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());

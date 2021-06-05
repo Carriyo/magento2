@@ -295,16 +295,15 @@ class Configuration
     }
 
     /**
-     * @param $carriyoStatus
-     * @return mixed
+     * @return array
      */
-    public function getMagentoStatus($carriyoStatus)
+    public function getCarriyoMappedStatuses()
     {
         $orderStatusMap = [];
         foreach (explode(",", $this->getOrderStatusMap()) as $orderStatus) {
             $orderStatusValues = explode("=", $orderStatus);
             $orderStatusMap[trim($orderStatusValues[0])] = trim($orderStatusValues[1]);
         }
-        return $orderStatusMap[$carriyoStatus];
+        return $orderStatusMap;
     }
 }

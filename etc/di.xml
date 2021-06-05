@@ -18,4 +18,22 @@
 		<plugin name="coupon_uses_increment_plugin" type="Carriyo\Shipment\Plugin\CreateOrderPlugin" sortOrder="26"/>
 	</type>
 
+	<type name="Carriyo\Shipment\Logger\Handler">
+		<arguments>
+			<argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+		</arguments>
+	</type>
+	<type name="Carriyo\Shipment\Logger\Logger">
+		<arguments>
+			<argument name="name" xsi:type="string">carriyo</argument>
+			<argument name="handlers"  xsi:type="array">
+				<item name="system" xsi:type="object">Carriyo\Shipment\Logger\Handler</item>
+			</argument>
+		</arguments>
+	</type>
+
+	<type name="Magento\Sales\Block\Adminhtml\Order\View">
+		<plugin name="orderShipmentButton"
+				type="Carriyo\Shipment\Plugin\Adminhtml\Order\View"/>
+	</type>
 </config>

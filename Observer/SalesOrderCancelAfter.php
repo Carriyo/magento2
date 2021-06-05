@@ -7,7 +7,6 @@ namespace Carriyo\Shipment\Observer;
 
 use Carriyo\Shipment\Model\Helper;
 use Magento\Framework\Event\ObserverInterface;
-use Psr\Log\LoggerInterface;
 
 class SalesOrderCancelAfter implements ObserverInterface
 {
@@ -16,35 +15,33 @@ class SalesOrderCancelAfter implements ObserverInterface
      * @var Helper
      */
     protected $helper;
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+
 
     /**
      * SalesOrderCancelAfter constructor.
-     * @param LoggerInterface $logger
+     * @param Helper $helper
      */
     public function __construct(
-        Helper $helper,
-        LoggerInterface $logger
+        Helper $helper
     )
     {
         $this->helper = $helper;
-        $this->logger = $logger;
     }
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
-     * @return $this
+     * @return $this|void
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         /** @var \Magento\Sales\Model\Order $order */
         $order = $observer->getEvent()->getOrder();
-        $orderIncrementId=$order->getIncrementId();
-        $this->helper->sendOrderCancel($orderIncrementId);
-        //TODO save a comment on history
+        $orderIncrementId = $order->getIncrementId();
+        try {
+            $this->helper->sendOrderCancel($orderIncrementId);
+        } catch (\Exception $e) {
+            $order->addCommentToStatusHistory($e->getMessage());
+        }
         return $this;
     }
 }

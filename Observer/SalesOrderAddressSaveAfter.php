@@ -6,7 +6,6 @@ namespace Carriyo\Shipment\Observer;
 
 use Carriyo\Shipment\Model\Helper;
 use Magento\Framework\Event\ObserverInterface;
-use Psr\Log\LoggerInterface;
 
 class SalesOrderAddressSaveAfter implements ObserverInterface
 {
@@ -15,7 +14,6 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
      */
     protected $registry;
 
-    protected $logger;
 
     protected $helper;
 
@@ -24,20 +22,16 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        Helper $helper,
-        LoggerInterface $logger
+        Helper $helper
     )
     {
         $this->registry = $registry;
         $this->helper = $helper;
-        $this->logger = $logger;
     }
 
     /**
-     * After load observer for order address
-     *
      * @param \Magento\Framework\Event\Observer $observer
-     * @return $this
+     * @return $this|void
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -45,7 +39,11 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
             return $this;
         }
         $order = $observer->getEvent()->getAddress()->getOrder();
-        $this->helper->sendOrderUpdate($order);
+        try {
+            $this->helper->sendOrderUpdate($order);
+        } catch (\Exception $e) {
+            $order->addCommentToStatusHistory($e->getMessage());
+        }
         return $this;
     }
 }

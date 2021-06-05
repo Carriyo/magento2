@@ -4,10 +4,10 @@
 
 namespace Carriyo\Shipment\Controller\Webhook;
 
+use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Helper;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\ResponseInterface;
-use Psr\Log\LoggerInterface;
 
 class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements HttpPostActionInterface
 {
@@ -18,7 +18,7 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
     private $request;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
     /**
@@ -31,13 +31,13 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\HTTP\PhpEnvironment\Request $request
      * @param Helper $helper
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\HTTP\PhpEnvironment\Request $request,
         Helper $helper,
-        LoggerInterface $logger
+        Logger $logger
     )
     {
         parent::__construct($context);
@@ -54,7 +54,7 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
      */
     public function execute()
     {
-        $this->logger->debug("Carriyo webhook invoked (ShipmentUpdated): " . $this->request->getContent());
+        $this->logger->info("Carriyo webhook invoked (ShipmentUpdated): " . $this->request->getContent());
 
         if ($this->request->getHeader('Content-Type') !== 'application/json') {
             $this->returnHttpResponse(400);
@@ -64,13 +64,26 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
         if (empty($payload)) {
             $this->returnHttpResponse(400);
         }
-        $shipmentRef = $payload['references']['partner_shipment_reference'] ?? false;
-        $carriyoStatus = $payload['post_shipping_info']['status'] ?? false;
-
-        if (!empty($shipmentRef) && $this->helper->updateOrder($shipmentRef, $carriyoStatus)) {
-            $this->returnHttpResponse(200);
+        if (!isset($payload['references'])) {
+            $this->returnHttpResponse(400, 'MISSING references');
         }
-        $this->returnHttpResponse(400);
+        if (!isset($payload['references']['partner_shipment_reference'])) {
+            $this->returnHttpResponse(400, 'MISSING partner_shipment_reference');
+        }
+        if (!isset($payload['post_shipping_info']['status'])) {
+            $this->returnHttpResponse(400, 'MISSING status');
+        }
+
+        $shipmentRef = $payload['references']['partner_shipment_reference'];
+        $carriyoStatus = $payload['post_shipping_info']['status'];
+
+        try {
+            $this->helper->updateOrder($shipmentRef, $carriyoStatus);
+            $this->returnHttpResponse(200, 'STATUS UPDATED');
+        } catch (\Exception $e) {
+            $this->returnHttpResponse(400, $e->getMessage());
+
+        }
     }
 
     /**
@@ -78,8 +91,11 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
      *
      * @param int $responseCode
      */
-    protected function returnHttpResponse($responseCode)
+    protected function returnHttpResponse($responseCode, $body = null)
     {
+        if (!empty($body)) {
+            $this->getResponse()->setBody($body);
+        }
         $this->getResponse()
             ->setHttpResponseCode($responseCode)
             ->sendResponse();
