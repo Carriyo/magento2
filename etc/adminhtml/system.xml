@@ -5,8 +5,7 @@
  * https://www.carriyo.com | info@carriyo.com
  */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="carriyo" sortOrder="999" translate="label">
             <label>Carriyo</label>
@@ -85,36 +84,6 @@
                     <comment>This can be created from carriyo dashboard</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <!--<field id="contact_name" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-                    <label>Contact Name</label>
-                    <comment/>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="contact_phone" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-                    <label>Contact Phone</label>
-                    <comment/>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="address1" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-                    <label>Address</label>
-                    <comment/>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="city" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-                    <label>City</label>
-                    <comment/>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="state" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-                    <label>State</label>
-                    <comment/>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="country" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="select" canRestore="1">
-                    <label>Country</label>
-                    <comment/>
-                    <source_model>Carriyo\Shipment\Model\System\Config\Source\Country</source_model>
-                </field>-->
             </group>
             <group id="shipping_method_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">
