@@ -41,18 +41,12 @@ The following fields can be find in
 	- Tenant ID - (required) Have in mind that this field is case sensitive.
 	- Client ID - (required)
 	- Client Secret - (required)
-	- Audience - (required) 
-	- Merchant (Optional) - (optional)
+	- Merchant (required) - (required)
  -  API Endpoints
 	- Api URL - (required) The Carriyo API url
 	- Api OAuth URL - (required) The Carriyo autentication url
  -  Pickup Address
-	- Contact Name - (required)
-	- Contact Phone - (required)
-	- Address - (required)
-	- City - (required)
-	- State - (required)
-	- Country - (required)
+	- Location Code - (required)
  -  Shipping Method Map
 	- Shipping Methods - (required) A map between your sipping methods labels and Carriyo shipping type. Exp `Flat Rate=STANDARD,Free Shipping=EXPRESS`
 

@@ -5,111 +5,135 @@
  * https://www.carriyo.com | info@carriyo.com
  */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-	<system>
-		<tab id="carriyo" sortOrder="999" translate="label">
-			<label>Carriyo</label>
-		</tab>
-		<section id="carriyo" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
-			<label>Settings</label>
-			<tab>carriyo</tab>
-			<resource>Carriyo_Shipment::config_carriyo_shipment</resource>
-			<group id="general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
-				<label>Enable module</label>
-				<field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Enable</label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<attribute type="expanded">1</attribute>
-			</group>
-			<group id="api_credentials" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
-				<label>API Credentials</label>
-				<field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Api Key</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Tenant ID</label>
-					<comment>Have in mind that this field is case sensitive.</comment>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Client ID</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="client_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="obscure">
-					<label>Client Secret</label>
-					<comment/>
-					<backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-					<config_path>carriyo/api_credentials/client_secret</config_path>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="audience" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Audience</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-					<label>Merchant (Optional)</label>
-					<comment>* Specify value if the tenant is merchant enabled</comment>
-					<validate>validate-no-html-tags</validate>
-				</field>
-			</group>
-			<group id="api_endpoints" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label">
-				<label>API Endpoints</label>
-				<field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label" type="text">
-					<label>Api URL</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="api_oauth_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label" type="text">
-					<label>Api OAuth URL</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-			</group>
-			<group id="pickup_address" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label">
-				<label>Pickup Address</label>
-				<field id="contact_name" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-					<label>Contact Name</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="contact_phone" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-					<label>Contact Phone</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="address1" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-					<label>Address</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="city" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-					<label>City</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="state" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
-					<label>State</label>
-					<comment/>
-					<validate>required-entry validate-no-html-tags</validate>
-				</field>
-				<field id="country" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="select" canRestore="1">
-					<label>Country</label>
-					<comment/>
-					<source_model>Carriyo\Shipment\Model\System\Config\Source\Country</source_model>
-				</field>
-			</group>
-			<group id="shipping_method_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30" translate="label">
-				<label>Shipping Method Map</label>
-				<field id="shipping_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30" translate="label" type="textarea">
-					<label>Shipping Methods</label>
-					<comment/>
-				</field>
-			</group>
-		</section>
-	</system>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="carriyo" sortOrder="999" translate="label">
+            <label>Carriyo</label>
+        </tab>
+        <section id="carriyo" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+            <label>Settings</label>
+            <tab>carriyo</tab>
+            <resource>Carriyo_Shipment::config_carriyo_shipment</resource>
+            <group id="general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
+                <label>Enable module</label>
+                <field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <attribute type="expanded">1</attribute>
+            </group>
+            <group id="api_credentials" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                   translate="label">
+                <label>API Credentials</label>
+                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
+                       type="text">
+                    <label>Api Key</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                       translate="label" type="text">
+                    <label>Tenant ID</label>
+                    <comment>Have in mind that this field is case sensitive.</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                       translate="label" type="text">
+                    <label>Client ID</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="client_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                       translate="label" type="obscure">
+                    <label>Client Secret</label>
+                    <comment/>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <config_path>carriyo/api_credentials/client_secret</config_path>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                       translate="label" type="text">
+                    <label>Merchant</label>
+                    <comment>* Specify value if the tenant is merchant enabled</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+            </group>
+            <group id="api_endpoints" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15"
+                   translate="label">
+                <label>API Endpoints</label>
+                <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label"
+                       type="text">
+                    <label>Api DOMAIN</label>
+                    <comment>eg: https://demo-api.carriyo.com</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="api_oauth_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15"
+                       translate="label" type="text">
+                    <label>Api OAuth DOMAIN</label>
+                    <comment>https://demo-api.carriyo.com</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+            </group>
+            <group id="pickup_address" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
+                   translate="label">
+                <label>Pickup Address</label>
+                <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
+                       translate="label" type="text">
+                    <label>Location Code</label>
+                    <comment>This can be created from carriyo dashboard</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <!--<field id="contact_name" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
+                    <label>Contact Name</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="contact_phone" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
+                    <label>Contact Phone</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="address1" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
+                    <label>Address</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="city" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
+                    <label>City</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="state" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
+                    <label>State</label>
+                    <comment/>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="country" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="select" canRestore="1">
+                    <label>Country</label>
+                    <comment/>
+                    <source_model>Carriyo\Shipment\Model\System\Config\Source\Country</source_model>
+                </field>-->
+            </group>
+            <group id="shipping_method_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                   translate="label">
+                <label>Shipping Method Map</label>
+                <field id="shipping_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                       translate="label" type="textarea">
+                    <label>Shipping Methods</label>
+                    <comment/>
+                </field>
+            </group>
+            <group id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="31"
+                   translate="label">
+                <label>Order Status Map</label>
+                <field id="order_status" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="31"
+                       translate="label" type="textarea">
+                    <label>Order Status</label>
+                    <comment/>
+                </field>
+            </group>
+        </section>
+    </system>
 </config>

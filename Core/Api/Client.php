@@ -7,6 +7,7 @@
 namespace Carriyo\Shipment\Core\Api;
 
 
+use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Configuration;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -25,6 +26,11 @@ class Client extends AbstractHttp
     private $oauth;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Client constructor.
      * @param Configuration $configuration
      * @param SerializerInterface $serializer
@@ -33,11 +39,75 @@ class Client extends AbstractHttp
     public function __construct(
         Configuration $configuration,
         SerializerInterface $serializer,
-        OAuth $oauth
+        OAuth $oauth,
+        Logger $logger
     )
     {
         parent::__construct($configuration, $serializer);
         $this->oauth = $oauth;
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param \Magento\Sales\Api\Data\ShipmentInterface $shipment
+     * @return array|bool|float|int|string|null
+     */
+    public function sendOrderDraft(OrderInterface $order)
+    {
+        $response = null;
+        try {
+            /** @var Address $shippingAddress */
+            $body = $this->getRequestBody($order);
+            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            $response = $this->getClient()
+                ->post($this->configuration->getUrl() . '/shipments/draft', ['json' => $body]);
+
+        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+            $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
+            return ['errors' => $exception->getMessage()];
+        }
+        return $this->serializer->unserialize($response->getBody()->getContents());
+    }
+
+    /**
+     * @param $orderId
+     * @return array|bool|float|int|string|null
+     */
+    public function sendOrderCancel($orderId)
+    {
+        $response = null;
+        try {
+            $this->logger->info("Carriyo Cancel Request " . $orderId);
+            $response = $this->getClient()
+                ->patch($this->configuration->getUrl() . "/shipments/{$orderId}/cancel");
+
+        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+            $this->logger->info('Carriyo sendOrderCancel Exception ' . $exception->getMessage());
+            return ['errors' => $exception->getMessage()];
+        }
+        return $this->serializer->unserialize($response->getBody()->getContents());
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return array|bool|float|int|string|null
+     */
+    public function sendUpdateOrderDraft(OrderInterface $order)
+    {
+        $response = null;
+        try {
+            /** @var Address $shippingAddress */
+            $body = $this->getRequestBody($order);
+            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            $response = $this->getClient()
+                ->patch($this->configuration->getUrl() . '/shipments/draft/' . $order->getIncrementId(), ['json' => $body]);
+
+        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+            $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
+            return ['errors' => $exception->getMessage()];
+        }
+        return $this->serializer->unserialize($response->getBody()->getContents());
     }
 
     /**
@@ -83,12 +153,7 @@ class Client extends AbstractHttp
                 ],
                 'items' => $items,
                 'pickup' => [
-                    'contact_name' => $this->configuration->getContactName(),
-                    'contact_phone' => $this->configuration->getContactPhone(),
-                    'address1' => $this->configuration->getAddress(),
-                    'city' => $this->configuration->getCity(),
-                    'state' => $this->configuration->getState(),
-                    'country' => $this->configuration->getCountry(),
+                    'partner_location_code' => $this->configuration->getLocationCode()
                 ],
                 'dropoff' => [
                     'contact_name' => implode(" ", [$shippingAddress->getFirstname(), $shippingAddress->getLastname()]),
@@ -98,7 +163,7 @@ class Client extends AbstractHttp
                     'city' => $shippingAddress->getCity(),
                     'state' => $shippingAddress->getRegion(),
                     'postcode' => $shippingAddress->getPostcode(),
-                    'country' => 'AE',
+                    'country' => $shippingAddress->getCountryId(),
                 ]
             ];
 
@@ -108,13 +173,13 @@ class Client extends AbstractHttp
 
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
-        } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['errors'];
-            return ['errors' => $message];
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
             return [
                 'errors' => ['Error trying to reach Carriyo, please create the shipment manually']
             ];
+        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+            //$message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['errors'];
+            return ['errors' => $exception->getMessage()];
         }
 
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -130,5 +195,63 @@ class Client extends AbstractHttp
                 'tenant-id' => $this->configuration->getTenantId()
             ];
         }
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return array
+     */
+    protected function getRequestBody(OrderInterface $order)
+    {
+        $shippingAddress = $order->getShippingAddress();
+        $payment = $order->getPayment();
+        $paymentMethod = $payment->getMethod();
+
+        $items = [];
+        foreach ($order->getItems() as $item) {
+            $items[] = [
+                'sku' => $item->getSku(),
+                'description' => $item->getName(),
+                'quantity' => (float)$item->getQtyOrdered(),
+                'price' => [
+                    'amount' => (float)$item->getPriceInclTax(),
+                    'currency' => $order->getOrderCurrencyCode()
+                ],
+                'dangerous_goods' => false
+            ];
+        }
+
+        $body = [
+            'references' => [
+                'partner_order_reference' => $order->getIncrementId(),
+                'partner_shipment_reference' => $order->getIncrementId(),
+            ],
+            'payment' => [
+                'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',
+                'total_amount' => $order->getGrandTotal(),
+                'pending_amount' => $paymentMethod === 'cashondelivery' ? $order->getGrandTotal() : 0,
+                'currency' => $order->getOrderCurrencyCode()
+            ],
+            'delivery' => [
+                'delivery_type' => $this->configuration->getDeliveryType($order->getShippingMethod()),
+                'scheduled_date' => ''
+            ],
+            'items' => $items,
+            'pickup' => [
+                'partner_location_code' => $this->configuration->getLocationCode()
+            ],
+            'dropoff' => [
+                'contact_name' => implode(" ", [$shippingAddress->getFirstname(), $shippingAddress->getLastname()]),
+                'contact_phone' => $shippingAddress->getTelephone(),
+                'contact_email' => $shippingAddress->getEmail(),
+                'address1' => implode(",", $shippingAddress->getStreet()),
+                'city' => $shippingAddress->getCity(),
+                'state' => $shippingAddress->getRegion(),
+                'postcode' => $shippingAddress->getPostcode(),
+                'country' => $shippingAddress->getCountryId(),
+            ],
+            'merchant' => $this->configuration->getMerchant()
+        ];
+        return $body;
     }
 }

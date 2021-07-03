@@ -29,7 +29,6 @@ class Configuration
     const CONFIG_PATH_TENANT_ID = 'carriyo/api_credentials/tenant_id';
     const CONFIG_PATH_CLIENT_ID = 'carriyo/api_credentials/client_id';
     const CONFIG_PATH_CLIENT_SECRET = 'carriyo/api_credentials/client_secret';
-    const CONFIG_PATH_AUDIENCE = 'carriyo/api_credentials/audience';
     const CONFIG_PATH_MERCHANT = 'carriyo/api_credentials/merchant';
 
     //= API Endpoints
@@ -43,9 +42,12 @@ class Configuration
     const CONFIG_PATH_CITY = 'carriyo/pickup_address/city';
     const CONFIG_PATH_STATE = 'carriyo/pickup_address/state';
     const CONFIG_PATH_COUNTRY = 'carriyo/pickup_address/country';
+    const CONFIG_PATH_LOCATION_CODE = 'carriyo/pickup_address/location_code';
 
     // = Shipping Method Map
     const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/shipping_method_map/shipping_methods';
+
+    const CONFIG_PATH_STATUS_MAP = 'carriyo/order_status_map/order_status';
 
     /**
      * @var ScopeConfigInterface
@@ -145,13 +147,6 @@ class Configuration
         );
     }
 
-    /**
-     * @return string
-     */
-    public function getAudience()
-    {
-        return (string)$this->configReader->getValue(self::CONFIG_PATH_AUDIENCE);
-    }
 
     /**
      * @return string
@@ -166,7 +161,7 @@ class Configuration
      */
     public function getUrl()
     {
-        return (string) $this->configReader->getValue(self::CONFIG_PATH_API_URL);
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_API_URL);
     }
 
     /**
@@ -174,7 +169,7 @@ class Configuration
      */
     public function getOauthUrl()
     {
-        return (string) $this->configReader->getValue(self::CONFIG_PATH_API_OAUTH_URL);
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_API_OAUTH_URL);
     }
 
     /**
@@ -183,6 +178,14 @@ class Configuration
     public function getContactName()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_CONTACT_NAME);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocationCode()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_LOCATION_CODE);
     }
 
     /**
@@ -234,11 +237,19 @@ class Configuration
     }
 
     /**
+     * @return string
+     */
+    public function getOrderStatusMap()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_STATUS_MAP);
+    }
+
+    /**
      * @return bool
      */
     public function isActive()
     {
-        return (bool) $this->configReader->getValue(self::CONFIG_PATH_ACTIVE);
+        return (bool)$this->configReader->getValue(self::CONFIG_PATH_ACTIVE);
     }
 
     /**
@@ -247,18 +258,20 @@ class Configuration
      */
     public function getDeliveryType($code)
     {
-        $deliveryType = 'STANDARD';
+        $deliveryType = null;
+        try {
+            $shippingMap = [];
+            foreach (explode(",", $this->getShippingMethods()) as $shipping) {
+                $shippingValues = explode("=", $shipping);
+                $shippingMap[$shippingValues[0]] = $shippingValues[1];
+            }
 
-        $shippingMap = [];
-        foreach (explode(",", $this->getShippingMethods()) as $shipping) {
-            $shippingValues = explode("=", $shipping);
-            $shippingMap[$shippingValues[0]] = $shippingValues[1];
+            if (array_key_exists($code, $this->getActiveShippingMethod())) {
+                $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
+            }
+        } catch (\Exception $e) {
+            //do nothing as value is already defaulted
         }
-
-        if (array_key_exists($code, $this->getActiveShippingMethod())) {
-            $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
-        }
-
         return $deliveryType;
     }
 
@@ -279,5 +292,18 @@ class Configuration
             }
         }
         return $methods;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCarriyoMappedStatuses()
+    {
+        $orderStatusMap = [];
+        foreach (explode(",", $this->getOrderStatusMap()) as $orderStatus) {
+            $orderStatusValues = explode("=", $orderStatus);
+            $orderStatusMap[trim($orderStatusValues[0])] = trim($orderStatusValues[1]);
+        }
+        return $orderStatusMap;
     }
 }

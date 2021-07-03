@@ -33,13 +33,13 @@ class OAuth extends AbstractHttp
             $body = [
                 'grant_type' => $this->configuration->getGrantType(),
                 'client_id' => $this->configuration->getClientId(),
-                'client_secret' => $this->configuration->getClientSecret(),
-                'audience' => $this->configuration->getAudience()
+                'client_secret' => $this->configuration->getClientSecret()
             ];
+            $url = $this->configuration->getOauthUrl() . '/oauth/token';
 
             $response = $client->post(
-                $this->configuration->getOauthUrl() . '/oauth/token',
-                [ 'json' => $body ]
+                str_replace('//', '/', $url),
+                ['json' => $body]
             );
             $this->accessToken = $this->serializer
                 ->unserialize($response->getBody()->getContents())['access_token'];
