@@ -38,7 +38,7 @@ class OAuth extends AbstractHttp
             $url = $this->configuration->getOauthUrl() . '/oauth/token';
 
             $response = $client->post(
-                str_replace('//', '/', $url),
+                 $url,
                 ['json' => $body]
             );
             $this->accessToken = $this->serializer
