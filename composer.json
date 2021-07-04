@@ -12,6 +12,5 @@
         ]
     },
     "prefer-stable": false,
-    "minimum-stability": "dev",
     "version": "1.2.3-beta"
 }
