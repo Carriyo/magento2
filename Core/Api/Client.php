@@ -63,7 +63,7 @@ class Client extends AbstractHttp
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments/draft', ['json' => $body]);
 
-        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+        } catch (\Exception $exception) {
             $this->logger->info('Failed sending draft shipment to ' . $this->configuration->getUrl());
             $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
