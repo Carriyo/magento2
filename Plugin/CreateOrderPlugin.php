@@ -53,7 +53,7 @@ class CreateOrderPlugin
     public function afterPlace(Order $subject, Order $result): Order
     {
         try {
-            $shipmentId = $this->helper->sendOrderDetails($subject);
+            $shipmentId = $this->helper->sendOrderCreate($subject);
             if (!empty($shipmentId)) {
                 $subject->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
             }

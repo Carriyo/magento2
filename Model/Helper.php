@@ -105,11 +105,14 @@ class Helper
     }
 
     /**
+     * Function to create draft shipment in Carriyo
+     * triggered automatically by the "afterPlace" plugin
+     *
      * @param $order
      * @return |null
      * @throws LocalizedException
      */
-    public function sendOrderDetails(
+    public function sendOrderCreate(
         $order
     )
     {
@@ -122,6 +125,7 @@ class Helper
         $pendingStates = array("pending", "pending_payment", "pending_paypal", "fraud", "payment_review");
         if (in_array($order->getState(), $pendingStates)
          && $order->getPayment()->getMethod() !== 'cashondelivery') {
+            $this->logger->info("Carriyo Shipment skipped because the order state is pending");
             return $shipmentId;
         }
 
@@ -145,6 +149,10 @@ class Helper
     }
 
     /**
+     * Function to create or update draft shipment in Carriyo
+     * triggered manually by the "Send Shipment" on Order 
+     * Details page
+     *
      * @param $orderId
      * @return |null
      * @throws LocalizedException
@@ -161,7 +169,7 @@ class Helper
                 return $this->sendOrderUpdate($order);
             }
         }
-        $shipmentId = $this->sendOrderDetails($order);
+        $shipmentId = $this->sendOrderCreate($order);
         $order->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
         $this->orderRepository->save($order);
         return $shipmentId;
