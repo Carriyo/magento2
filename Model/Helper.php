@@ -118,6 +118,13 @@ class Helper
         if (!$this->configuration->isActive()) {
             return $shipmentId;
         }
+        
+        $pendingStates = array("pending", "pending_payment", "pending_paypal", "fraud", "payment_review");
+        if (in_array($order->getState(), $pendingStates)
+         && $order->getPayment()->getMethod() !== 'cashondelivery') {
+            return $shipmentId;
+        }
+
         try {
             $response = $this->carriyoClient->sendOrderDraft($order);
             if (!array_key_exists('errors', $response)) {
