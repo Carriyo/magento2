@@ -121,7 +121,9 @@ class Helper
         if (!$this->configuration->isActive()) {
             return $shipmentId;
         }
-        
+
+        $this->logger->info("Order State {$order->getState()}");
+
         $pendingStates = array("pending", "pending_payment", "pending_paypal", "fraud", "payment_review");
         if (in_array($order->getState(), $pendingStates)
          && $order->getPayment()->getMethod() !== 'cashondelivery') {
