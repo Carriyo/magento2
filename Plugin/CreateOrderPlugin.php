@@ -54,9 +54,6 @@ class CreateOrderPlugin
     {
         try {
             $shipmentId = $this->helper->sendOrderCreate($subject);
-            if (!empty($shipmentId)) {
-                $subject->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
-            }
         } catch (\Exception $e) {
             $subject->addCommentToStatusHistory($e->getMessage());
         }
