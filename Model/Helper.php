@@ -126,6 +126,8 @@ class Helper
         if (in_array($order->getStatus(), $pendingStatuses)
          && $order->getPayment()->getMethod() !== 'cashondelivery') {
             $this->logger->info("Carriyo Shipment skipped because the order status is pending Order ID: {$orderId} :: Status: " . $order->getStatus());
+                
+                $order->addCommentToStatusHistory("Carriyo Shipment Skipped (order pending)");
             return $shipmentId;
         }
 
@@ -134,6 +136,10 @@ class Helper
             if (!array_key_exists('errors', $response)) {
                 $shipmentId = $response["shipment_id"];
                 $this->logger->info("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
+
+                if (!empty($shipmentId)) {
+                    $order->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
+                }
             }
             if (array_key_exists('errors', $response)) {
                 throw new LocalizedException(__($response['errors']));
@@ -170,7 +176,6 @@ class Helper
             }
         }
         $shipmentId = $this->sendOrderCreate($order);
-        $order->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
         $this->orderRepository->save($order);
         return $shipmentId;
     }
