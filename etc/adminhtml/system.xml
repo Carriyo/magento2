@@ -28,14 +28,14 @@
                 <label>API Credentials</label>
                 <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
                        type="text">
-                    <label>Api Key</label>
+                    <label>API Key</label>
                     <comment/>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                        translate="label" type="text">
                     <label>Tenant ID</label>
-                    <comment>Have in mind that this field is case sensitive.</comment>
+                    <comment>* Provide the Tenant ID (case sensitive)</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
@@ -55,7 +55,7 @@
                 <field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                        translate="label" type="text">
                     <label>Merchant</label>
-                    <comment>* Specify value if the tenant is merchant enabled</comment>
+                    <comment>* Provide the Merchant ID (case sensitive)</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
@@ -64,14 +64,14 @@
                 <label>API Endpoints</label>
                 <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label"
                        type="text">
-                    <label>Api DOMAIN</label>
+                    <label>API Domain</label>
                     <comment>eg: https://demo-api.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="api_oauth_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15"
                        translate="label" type="text">
-                    <label>Api OAuth DOMAIN</label>
-                    <comment>https://demo-api.carriyo.com</comment>
+                    <label>API OAuth DOMAIN</label>
+                    <comment>https://demo-auth.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
@@ -81,7 +81,7 @@
                 <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                        translate="label" type="text">
                     <label>Location Code</label>
-                    <comment>This can be created from carriyo dashboard</comment>
+                    <comment>Provide the Carriyo location code to use for pickup address</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
