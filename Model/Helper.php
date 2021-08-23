@@ -122,12 +122,10 @@ class Helper
             return $shipmentId;
         }
 
-        $this->logger->info("Order Status {$order->getStatus()}");
-
         $pendingStatuses = array("pending", "pending_payment", "pending_paypal", "fraud", "payment_review");
         if (in_array($order->getStatus(), $pendingStatuses)
          && $order->getPayment()->getMethod() !== 'cashondelivery') {
-            $this->logger->info("Carriyo Shipment skipped because the order status is pending");
+            $this->logger->info("Carriyo Shipment skipped because the order status is pending Order ID: " . $order->getId());
             return $shipmentId;
         }
 
