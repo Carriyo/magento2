@@ -226,7 +226,7 @@ class Client extends AbstractHttp
         $body = [
             'references' => [
                 'partner_order_reference' => $order->getIncrementId(),
-                'partner_shipment_reference' => $this->configuration->getShipmentReference($shipment->getIncrementId())
+                'partner_shipment_reference' => $this->configuration->getShipmentReference($order->getIncrementId())
             ],
             'payment' => [
                 'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',
