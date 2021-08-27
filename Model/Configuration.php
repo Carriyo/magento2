@@ -323,8 +323,8 @@ class Configuration
      */
     public function getShipmentReference($incrementId)
     {
-        if (getShipmentReferencePrefix() !== '') {
-            return getShipmentReferencePrefix() + $incrementId;
+        if ($this->getShipmentReferencePrefix() !== '') {
+            return $this->getShipmentReferencePrefix() + $incrementId;
         }
         return $incrementId;
     }
