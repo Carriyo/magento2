@@ -81,26 +81,28 @@
                 <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                        translate="label" type="text">
                     <label>Location Code</label>
-                    <comment>Provide the Carriyo location code to use for pickup address</comment>
+                    <comment>Provide the Carriyo location code for the default pickup location you want to use for shipments</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
-            <group id="shipping_method_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+            <group id="carriyo_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">
-                <label>Shipping Method Map</label>
+                <label>Carriyo Mappings</label>
                 <field id="shipping_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
-                    <label>Shipping Methods</label>
-                    <comment/>
+                    <label>Shipping Method Map</label>
+                    <comment>Map your Magento shipping methods to delivery methods you have defined in Carriyo</comment>
                 </field>
-            </group>
-            <group id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="31"
-                   translate="label">
-                <label>Order Status Map</label>
-                <field id="order_status" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="31"
+                <field id="order_status" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
-                    <label>Order Status</label>
-                    <comment/>
+                    <label>Order Status Map</label>
+                    <comment>Map Carriyo statuses to Magento order states during status updates</comment>
+                </field>
+                <field id="shipment_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                       translate="label" type="text">
+                    <label>Shipment Reference Prefix</label>
+                    <comment> Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.</comment>
+                    <validate>validate-no-html-tags</validate>
                 </field>
             </group>
         </section>
