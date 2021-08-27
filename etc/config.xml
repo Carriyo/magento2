@@ -16,9 +16,7 @@
 			</api_credentials>
 			<carriyo_mappings>
 				<shipping_methods_map/>
-				<order_status_map>
-					booked=processing,shipped=processing,delivered=complete
-				</order_status_map>
+				<order_status_map>booked=processing,shipped=processing,delivered=complete</order_status_map>
 			</carriyo_mappings>
 		</carriyo>
 	</default>
