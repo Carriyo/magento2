@@ -88,12 +88,12 @@
             <group id="carriyo_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">
                 <label>Carriyo Mappings</label>
-                <field id="shipping_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Shipping Method Map</label>
                     <comment>Map your Magento shipping methods to delivery methods you have defined in Carriyo</comment>
                 </field>
-                <field id="order_status" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Order Status Map</label>
                     <comment>Map Carriyo statuses to Magento order states during status updates</comment>

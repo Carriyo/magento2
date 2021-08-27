@@ -45,9 +45,11 @@ class Configuration
     const CONFIG_PATH_LOCATION_CODE = 'carriyo/pickup_address/location_code';
 
     // = Shipping Method Map
-    const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/shipping_method_map/shipping_methods';
+    const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
 
-    const CONFIG_PATH_STATUS_MAP = 'carriyo/order_status_map/order_status';
+    const CONFIG_PATH_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
+
+    const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
 
     /**
      * @var ScopeConfigInterface
