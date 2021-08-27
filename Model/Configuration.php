@@ -276,6 +276,7 @@ class Configuration
                 $shippingMap[$shippingValues[0]] = $shippingValues[1];
             }
 
+            $this->logger->info('order shipping method' . $code);
             if (array_key_exists($code, $this->getActiveShippingMethod())) {
                 $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
             }
@@ -298,6 +299,10 @@ class Configuration
                     $code = $shippingCode . '_' . $methodCode;
                     $carrierTitle = $this->scopeConfig->getValue('carriers/' . $shippingCode . '/title');
                     $methods[$code] = $carrierTitle;
+                    $this->logger->info('shippingCode' . $shippingCode);
+                    $this->logger->info('methodCode' . $methodCode
+                    $this->logger->info('code' . $code);
+                    $this->logger->info('carrierTitle' . $carrierTitle);
                 }
             }
         }
