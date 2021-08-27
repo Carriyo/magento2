@@ -247,6 +247,14 @@ class Configuration
     }
 
     /**
+     * @return string
+     */
+    public function getShipmentReferencePrefix()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_SHIPMENT_PREFIX);
+    }
+
+    /**
      * @return bool
      */
     public function isActive()
@@ -307,5 +315,17 @@ class Configuration
             $orderStatusMap[trim($orderStatusValues[0])] = trim($orderStatusValues[1]);
         }
         return $orderStatusMap;
+    }
+
+    /**
+     * @param $incrementId
+     * @return string
+     */
+    public function getShipmentReference($incrementId)
+    {
+        if (getShipmentReferencePrefix() !== '') {
+            return getShipmentReferencePrefix() + $incrementId;
+        }
+        return $incrementId;
     }
 }
