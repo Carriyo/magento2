@@ -7,6 +7,7 @@
 namespace Carriyo\Shipment\Model;
 
 
+use Carriyo\Shipment\Logger\Logger;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Module\ModuleListInterface;
@@ -50,6 +51,11 @@ class Configuration
     const CONFIG_PATH_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
 
     const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var ScopeConfigInterface
@@ -96,7 +102,8 @@ class Configuration
         StoreManagerInterface $storeManager,
         ModuleListInterface $moduleList,
         Config $shippingModelConfig,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger
     )
     {
         $this->configReader = $configReader;
@@ -105,6 +112,7 @@ class Configuration
         $this->moduleList = $moduleList;
         $this->shippingModelConfig = $shippingModelConfig;
         $this->scopeConfig = $scopeConfig;
+        $this->logger = $logger;
     }
 
     /**
