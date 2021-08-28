@@ -276,6 +276,7 @@ class Configuration
      */
     public function getDeliveryType($code)
     {
+        $this->logger->info('order shipping method' . $code);
         $deliveryType = null;
         try {
             $shippingMap = [];
@@ -284,7 +285,6 @@ class Configuration
                 $shippingMap[$shippingValues[0]] = $shippingValues[1];
             }
 
-            $this->logger->info('order shipping method' . $code);
             if (array_key_exists($code, $this->getActiveShippingMethod())) {
                 $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
             }
