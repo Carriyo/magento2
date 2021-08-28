@@ -308,7 +308,7 @@ class Configuration
                     $carrierTitle = $this->scopeConfig->getValue('carriers/' . $shippingCode . '/title');
                     $methods[$code] = $carrierTitle;
                     $this->logger->info('shippingCode' . $shippingCode);
-                    $this->logger->info('methodCode' . $methodCode
+                    $this->logger->info('methodCode' . $methodCode);
                     $this->logger->info('code' . $code);
                     $this->logger->info('carrierTitle' . $carrierTitle);
                 }
