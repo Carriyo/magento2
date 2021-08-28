@@ -276,7 +276,6 @@ class Configuration
      */
     public function getDeliveryType($code)
     {
-        $this->logger->info('order shipping method' . $code);
         $deliveryType = null;
         try {
             $shippingMap = [];
@@ -307,10 +306,6 @@ class Configuration
                     $code = $shippingCode . '_' . $methodCode;
                     $carrierTitle = $this->scopeConfig->getValue('carriers/' . $shippingCode . '/title');
                     $methods[$code] = $carrierTitle;
-                    $this->logger->info('shippingCode' . $shippingCode);
-                    $this->logger->info('methodCode' . $methodCode);
-                    $this->logger->info('code' . $code);
-                    $this->logger->info('carrierTitle' . $carrierTitle);
                 }
             }
         }
