@@ -7,6 +7,7 @@
 namespace Carriyo\Shipment\Model;
 
 
+use Carriyo\Shipment\Logger\Logger;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Module\ModuleListInterface;
@@ -45,9 +46,16 @@ class Configuration
     const CONFIG_PATH_LOCATION_CODE = 'carriyo/pickup_address/location_code';
 
     // = Shipping Method Map
-    const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/shipping_method_map/shipping_methods';
+    const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
 
-    const CONFIG_PATH_STATUS_MAP = 'carriyo/order_status_map/order_status';
+    const CONFIG_PATH_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
+
+    const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var ScopeConfigInterface
@@ -94,7 +102,8 @@ class Configuration
         StoreManagerInterface $storeManager,
         ModuleListInterface $moduleList,
         Config $shippingModelConfig,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger
     )
     {
         $this->configReader = $configReader;
@@ -103,6 +112,7 @@ class Configuration
         $this->moduleList = $moduleList;
         $this->shippingModelConfig = $shippingModelConfig;
         $this->scopeConfig = $scopeConfig;
+        $this->logger = $logger;
     }
 
     /**
@@ -245,6 +255,14 @@ class Configuration
     }
 
     /**
+     * @return string
+     */
+    public function getShipmentReferencePrefix()
+    {
+        return (string)$this->configReader->getValue(self::CONFIG_PATH_SHIPMENT_PREFIX);
+    }
+
+    /**
      * @return bool
      */
     public function isActive()
@@ -305,5 +323,17 @@ class Configuration
             $orderStatusMap[trim($orderStatusValues[0])] = trim($orderStatusValues[1]);
         }
         return $orderStatusMap;
+    }
+
+    /**
+     * @param $incrementId
+     * @return string
+     */
+    public function getShipmentReference($incrementId)
+    {
+        if ($this->getShipmentReferencePrefix() !== '') {
+            return $this->getShipmentReferencePrefix() . $incrementId;
+        }
+        return $incrementId;
     }
 }
