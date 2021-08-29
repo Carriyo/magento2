@@ -9,7 +9,10 @@
         <observer name="carriyo_address_save" instance="Carriyo\Shipment\Observer\SalesOrderAddressSaveAfter" />
     </event>
     <event name="order_cancel_after">
-        <observer name="carriyo_shipment_cancel" instance="Carriyo\Shipment\Observer\SalesOrderCancelAfter" />
+        <observer name="carriyo_order_cancel" instance="Carriyo\Shipment\Observer\SalesOrderCancelAfter" />
+    </event>
+    <event name="sales_order_save_after">
+        <observer name="carriyo_order_save" instance="Carriyo\Shipment\Observer\SalesOrderSaveAfter" />
     </event>
 
 </config>

@@ -48,6 +48,10 @@ class Configuration
     // = Shipping Method Map
     const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
 
+    const CONFIG_PATH_ALLOWED_STATUSES_OTHER = 'carriyo/carriyo_mappings/allowed_statuses_other';
+
+    const CONFIG_PATH_ALLOWED_STATUSES_COD = 'carriyo/carriyo_mappings/allowed_statuses_cod';
+
     const CONFIG_PATH_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
 
     const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
@@ -244,6 +248,32 @@ class Configuration
     public function getShippingMethods()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_SHIPPING_METHODS);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAllowedStatusesOther()
+    {
+        $allowedStatuses = $this->configReader->getValue(self::CONFIG_PATH_ALLOWED_STATUSES_OTHER);
+        $allowedStatusesList = [];
+        foreach (explode(",", $allowedStatuses) as $status) {
+            $allowedStatusesList[] = $status;
+        }
+        return $allowedStatuses;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAllowedStatusesCOD()
+    {
+        $allowedStatuses = $this->configReader->getValue(self::CONFIG_PATH_ALLOWED_STATUSES_COD);
+        $allowedStatusesList = [];
+        foreach (explode(",", $allowedStatuses) as $status) {
+            $allowedStatusesList[] = $status;
+        }
+        return $allowedStatuses;
     }
 
     /**

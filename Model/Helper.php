@@ -170,14 +170,27 @@ class Helper
             $this->logger->info("sendOrder ORDER NOT FOUND {$orderId}");
             return ['error' => 'ORDER NOT FOUND'];
         }
-        foreach ($order->getAllStatusHistory() as $orderComment) {
-            if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0) {
-                return $this->sendOrderUpdate($order);
+
+        $allowedStatusesOther = $this->configuration->getAllowedStatuses();
+        $allowedStatusesCOD = $this->configuration->getAllowedStatusesForCOD();
+
+        if ((in_array($order->getStatus(), $allowedStatusesOther)
+         && $order->getPayment()->getMethod() !== 'cashondelivery') || (in_array($order->getStatus(), $allowedStatusesCOD)
+         && $order->getPayment()->getMethod() === 'cashondelivery')) {
+            foreach ($order->getAllStatusHistory() as $orderComment) {
+                if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0) {
+                    return $this->sendOrderUpdate($order);
+                }
             }
+            $shipmentId = $this->sendOrderCreate($order);
+            $this->orderRepository->save($order);
+            return $shipmentId;
+        } else {
+            $this->logger->info("Carriyo Shipment skipped because the order status is not allowed Order ID: {$orderId} :: Status: " . $order->getStatus());
+                
+                $order->addCommentToStatusHistory("Carriyo Shipment Skipped (status not allowed)");
+            return $shipmentId;
         }
-        $shipmentId = $this->sendOrderCreate($order);
-        $this->orderRepository->save($order);
-        return $shipmentId;
     }
 
     /**

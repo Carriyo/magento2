@@ -7,7 +7,7 @@ namespace Carriyo\Shipment\Observer;
 use Carriyo\Shipment\Model\Helper;
 use Magento\Framework\Event\ObserverInterface;
 
-class SalesOrderAddressSaveAfter implements ObserverInterface
+class SalesOrderSaveAfter implements ObserverInterface
 {
     /**
      * @var \Magento\Framework\Registry
@@ -36,11 +36,14 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $order = $observer->getEvent()->getAddress()->getOrder();
-        try {
-            $this->helper->sendOrder($order);
-        } catch (\Exception $e) {
-            $order->addCommentToStatusHistory($e->getMessage());
+        $order = $observer->getEvent()->getOrder();
+
+        if ($order instanceof \Magento\Framework\Model\AbstractModel) {
+            try {
+                $this->helper->sendOrder($order);
+            } catch (\Exception $e) {
+                $order->addCommentToStatusHistory($e->getMessage());
+            }
         }
         return $this;
     }
