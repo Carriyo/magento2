@@ -121,8 +121,8 @@ class Helper
             return ['error' => 'ORDER NOT FOUND'];
         }
 
-        $allowedStatusesOther = $this->configuration->getAllowedStatuses();
-        $allowedStatusesCOD = $this->configuration->getAllowedStatusesForCOD();
+        $allowedStatusesOther = $this->configuration->getAllowedStatusesOther();
+        $allowedStatusesCOD = $this->configuration->getAllowedStatusesCOD();
 
         if ((in_array($order->getStatus(), $allowedStatusesOther)
          && $order->getPayment()->getMethod() !== 'cashondelivery') || (in_array($order->getStatus(), $allowedStatusesCOD)

@@ -260,7 +260,7 @@ class Configuration
         foreach (explode(",", $allowedStatuses) as $status) {
             $allowedStatusesList[] = $status;
         }
-        return $allowedStatuses;
+        return $allowedStatusesList;
     }
 
     /**
@@ -273,7 +273,7 @@ class Configuration
         foreach (explode(",", $allowedStatuses) as $status) {
             $allowedStatusesList[] = $status;
         }
-        return $allowedStatuses;
+        return $allowedStatusesList;
     }
 
     /**
