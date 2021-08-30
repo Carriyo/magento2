@@ -52,9 +52,8 @@ class CreateOrderPlugin
      */
     public function afterPlace(Order $order, Order $result): Order
     {
-        $orderId = $order->getIncrementId();
         try {
-            $shipmentId = $this->helper->sendOrder($orderId);
+            $shipmentId = $this->helper->sendOrderCreateOrUpdate($order);
         } catch (\Exception $e) {
             $order->addCommentToStatusHistory($e->getMessage());
             $this->logger->info("Failed in CreateOrderPlugin");

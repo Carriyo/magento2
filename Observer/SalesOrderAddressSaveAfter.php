@@ -38,7 +38,7 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
     {
         $order = $observer->getEvent()->getAddress()->getOrder();
         try {
-            $this->helper->sendOrder($order);
+            $this->helper->sendOrderCreateOrUpdate($order);
         } catch (\Exception $e) {
             $order->addCommentToStatusHistory($e->getMessage());
         }
