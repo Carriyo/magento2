@@ -251,7 +251,7 @@ class Configuration
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getAllowedStatusesOther()
     {
@@ -264,7 +264,7 @@ class Configuration
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getAllowedStatusesCOD()
     {
