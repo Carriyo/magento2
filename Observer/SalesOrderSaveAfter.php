@@ -29,7 +29,7 @@ class SalesOrderSaveAfter implements ObserverInterface
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        Helper $helper
+        Helper $helper,
         Logger $logger
     )
     {
