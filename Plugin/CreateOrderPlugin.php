@@ -52,6 +52,8 @@ class CreateOrderPlugin
      */
     public function afterPlace(Order $order, Order $result): Order
     {
+        //commented out because we are using the Sales Order Save After observer to create and update shipment in Carriyo
+        /* 
         try {
             $shipmentId = $this->helper->sendOrderCreateOrUpdate($order);
         } catch (\Exception $e) {
@@ -59,6 +61,7 @@ class CreateOrderPlugin
             $this->logger->info("Failed in CreateOrderPlugin");
         }
         $this->registry->register('orderSentToCarriyo', 1);
+        */
         return $order;
     }
 }
