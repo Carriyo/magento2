@@ -56,6 +56,7 @@ class CreateOrderPlugin
             $shipmentId = $this->helper->sendOrder($subject);
         } catch (\Exception $e) {
             $subject->addCommentToStatusHistory($e->getMessage());
+            $this->logger->info("Failed in CreateOrderPlugin");
         }
         $this->registry->register('orderSentToCarriyo', 1);
         return $subject;
