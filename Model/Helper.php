@@ -105,56 +105,6 @@ class Helper
     }
 
     /**
-     * Function to create draft shipment in Carriyo
-     * triggered automatically by the "afterPlace" plugin
-     *
-     * @param $order
-     * @return |null
-     * @throws LocalizedException
-     */
-    public function sendOrderCreate(
-        $order
-    )
-    {
-        $shipmentId = null;
-        $orderId = $order->getIncrementId();
-        if (!$this->configuration->isActive()) {
-            return $shipmentId;
-        }
-
-        $pendingStatuses = array("pending", "pending_payment", "pending_paypal", "fraud", "payment_review");
-        if (in_array($order->getStatus(), $pendingStatuses)
-         && $order->getPayment()->getMethod() !== 'cashondelivery') {
-            $this->logger->info("Carriyo Shipment skipped because the order status is pending Order ID: {$orderId} :: Status: " . $order->getStatus());
-                
-                $order->addCommentToStatusHistory("Carriyo Shipment Skipped (order pending)");
-            return $shipmentId;
-        }
-
-        try {
-            $response = $this->carriyoClient->sendOrderDraft($order);
-            if (!array_key_exists('errors', $response)) {
-                $shipmentId = $response["shipment_id"];
-                $this->logger->info("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
-
-                if (!empty($shipmentId)) {
-                    $order->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
-                }
-            }
-            if (array_key_exists('errors', $response)) {
-                throw new LocalizedException(__($response['errors']));
-            }
-
-        } catch (\Exception $e) {
-            $this->logger->info("Carriyo Error while sendingOrderDetails {$orderId} " . $e->getMessage() . " Trace " . $e->getTraceAsString());
-            throw new LocalizedException(__('Carriyo SendDraftShipmentError %1', $e->getMessage()));
-
-        }
-
-        return $shipmentId;
-    }
-
-    /**
      * Function to create or update draft shipment in Carriyo
      * triggered manually by the "Send Shipment" on Order 
      * Details page
@@ -194,29 +144,44 @@ class Helper
     }
 
     /**
-     * @param $orderId
+     * Function to create draft shipment in Carriyo
+     * triggered automatically by the "afterPlace" plugin
+     *
+     * @param $order
+     * @return |null
      * @throws LocalizedException
      */
-    public function sendOrderCancel($orderId)
+    public function sendOrderCreate(
+        $order
+    )
     {
+        $shipmentId = null;
+        $orderId = $order->getIncrementId();
         if (!$this->configuration->isActive()) {
-            return;
+            return $shipmentId;
         }
+
         try {
-            $response = $this->carriyoClient->sendOrderCancel($orderId);
+            $response = $this->carriyoClient->sendOrderDraft($order);
             if (!array_key_exists('errors', $response)) {
-                $this->logger->info("Carriyo Cancel Order {$orderId} ::" . print_r($response, 1));
+                $shipmentId = $response["shipment_id"];
+                $this->logger->info("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
+
+                if (!empty($shipmentId)) {
+                    $order->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
+                }
             }
             if (array_key_exists('errors', $response)) {
-                $this->logger->info("Carriyo Response Error {$orderId}::" . $response['errors']);
                 throw new LocalizedException(__($response['errors']));
             }
 
         } catch (\Exception $e) {
-            $this->logger->info("Carriyo Error while sendOrderCancel {$orderId} " . $e->getMessage() . " Trace" . $e->getTraceAsString());
-            throw new LocalizedException(__('Carriyo CancelShipmentError %1', $e->getMessage()));
+            $this->logger->info("Carriyo Error while sendingOrderDetails {$orderId} " . $e->getMessage() . " Trace " . $e->getTraceAsString());
+            throw new LocalizedException(__('Carriyo SendDraftShipmentError %1', $e->getMessage()));
+
         }
-        return;
+
+        return $shipmentId;
     }
 
     /**
@@ -247,6 +212,32 @@ class Helper
             throw new LocalizedException(__('Carriyo SendShipmentDraftError %1', $e->getMessage()));
         }
         return $shipmentId;
+    }
+
+    /**
+     * @param $orderId
+     * @throws LocalizedException
+     */
+    public function sendOrderCancel($orderId)
+    {
+        if (!$this->configuration->isActive()) {
+            return;
+        }
+        try {
+            $response = $this->carriyoClient->sendOrderCancel($orderId);
+            if (!array_key_exists('errors', $response)) {
+                $this->logger->info("Carriyo Cancel Order {$orderId} ::" . print_r($response, 1));
+            }
+            if (array_key_exists('errors', $response)) {
+                $this->logger->info("Carriyo Response Error {$orderId}::" . $response['errors']);
+                throw new LocalizedException(__($response['errors']));
+            }
+
+        } catch (\Exception $e) {
+            $this->logger->info("Carriyo Error while sendOrderCancel {$orderId} " . $e->getMessage() . " Trace" . $e->getTraceAsString());
+            throw new LocalizedException(__('Carriyo CancelShipmentError %1', $e->getMessage()));
+        }
+        return;
     }
 
     /**
