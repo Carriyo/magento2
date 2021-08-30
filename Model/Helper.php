@@ -123,7 +123,7 @@ class Helper
         return sendCreateOrUpdateOrder($order);
     }
 
-     *
+     /**
      * @param $order
      * @return |null
      * @throws LocalizedException
