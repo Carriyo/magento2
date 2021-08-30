@@ -45,14 +45,13 @@ class SalesOrderSaveAfter implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
+        $orderId = $order->getIncrementId();
 
-        if ($order instanceof \Magento\Framework\Model\AbstractModel) {
-            try {
-                $this->helper->sendCreateorUpdate($order);
-            } catch (\Exception $e) {
-                $order->addCommentToStatusHistory($e->getMessage());
-                $this->logger->info("Failed in SalesOrderSaveAfter");
-            }
+        try {
+            $this->helper->sendOrder($orderId);
+        } catch (\Exception $e) {
+            $order->addCommentToStatusHistory($e->getMessage());
+            $this->logger->info("Failed in SalesOrderSaveAfter");
         }
         return $this;
     }

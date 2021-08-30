@@ -41,6 +41,7 @@ class SalesOrderCancelAfter implements ObserverInterface
             $this->helper->sendOrderCancel($orderIncrementId);
         } catch (\Exception $e) {
             $order->addCommentToStatusHistory($e->getMessage());
+            $this->logger->info("Failed in SalesOrderCancelAfter");
         }
         return $this;
     }

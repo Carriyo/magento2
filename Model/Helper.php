@@ -107,7 +107,7 @@ class Helper
     /**
      * Function to create or update draft shipment in Carriyo
      * triggered manually by the "Send Shipment" on Order 
-     * Details page
+     * Details page and also triggered by the observer
      *
      * @param $orderId
      * @return |null
@@ -120,16 +120,7 @@ class Helper
             $this->logger->info("sendOrder ORDER NOT FOUND {$orderId}");
             return ['error' => 'ORDER NOT FOUND'];
         }
-        return this->sendCreateorUpdate(order;
-    }
 
-     /**
-     * @param $order
-     * @return |null
-     * @throws LocalizedException
-     */
-    public function sendCreateorUpdate($order) 
-    {
         $allowedStatusesOther = $this->configuration->getAllowedStatusesOther();
         $allowedStatusesCOD = $this->configuration->getAllowedStatusesCOD();
 
@@ -145,7 +136,7 @@ class Helper
             $this->orderRepository->save($order);
             return $shipmentId;
         } else {
-            $this->logger->info("Carriyo Shipment skipped because the order status is not allowed Order ID: {$orderId} :: Status: " . $order->getStatus());
+            $this->logger->info("Carriyo Shipment skipped because the order status is not allowed Order ID: {$order->getId()} :: Status: " . $order->getStatus());
                 
             $order->addCommentToStatusHistory("Carriyo Shipment Skipped (status not allowed)");
             $this->orderRepository->save($order);

@@ -45,20 +45,21 @@ class CreateOrderPlugin
     }
 
     /**
-     * @param Order $subject
+     * @param Order $order
      * @param Order $result
      * @return Order
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function afterPlace(Order $subject, Order $result): Order
+    public function afterPlace(Order $order, Order $result): Order
     {
+        $orderId = $order->getIncrementId();
         try {
-            $shipmentId = $this->helper->sendOrder($subject);
+            $shipmentId = $this->helper->sendOrder($orderId);
         } catch (\Exception $e) {
-            $subject->addCommentToStatusHistory($e->getMessage());
+            $order->addCommentToStatusHistory($e->getMessage());
             $this->logger->info("Failed in CreateOrderPlugin");
         }
         $this->registry->register('orderSentToCarriyo', 1);
-        return $subject;
+        return $order;
     }
 }

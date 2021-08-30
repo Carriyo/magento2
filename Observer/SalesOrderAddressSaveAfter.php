@@ -41,6 +41,7 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
             $this->helper->sendOrder($order);
         } catch (\Exception $e) {
             $order->addCommentToStatusHistory($e->getMessage());
+            $this->logger->info("Failed in SalesOrderAddressSaveAfter");
         }
         return $this;
     }
