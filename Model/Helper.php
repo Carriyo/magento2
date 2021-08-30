@@ -120,7 +120,7 @@ class Helper
             $this->logger->info("sendOrder ORDER NOT FOUND {$orderId}");
             return ['error' => 'ORDER NOT FOUND'];
         }
-        return this->sendOrderCreateOrUpdate($order);
+        return $this->sendOrderCreateOrUpdate($order);
     }
 
      /**
