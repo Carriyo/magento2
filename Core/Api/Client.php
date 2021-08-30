@@ -81,7 +81,7 @@ class Client extends AbstractHttp
         try {
             $this->logger->info("Carriyo Cancel Request " . $orderId);
             $response = $this->getClient()
-                ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($ordeId) . "/cancel");
+                ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($orderId) . "/cancel");
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
             $this->logger->info('Carriyo sendOrderCancel Exception ' . $exception->getMessage());
