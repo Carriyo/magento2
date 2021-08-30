@@ -139,8 +139,8 @@ class Helper
             $this->logger->info("Carriyo Shipment skipped because the order status is not allowed Order ID: {$orderId} :: Status: " . $order->getStatus());
                 
                 $order->addCommentToStatusHistory("Carriyo Shipment Skipped (status not allowed)");
-            return $shipmentId;
         }
+        return null;
     }
 
     /**
