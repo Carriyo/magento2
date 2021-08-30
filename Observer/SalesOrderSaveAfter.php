@@ -48,10 +48,10 @@ class SalesOrderSaveAfter implements ObserverInterface
 
         if ($order instanceof \Magento\Framework\Model\AbstractModel) {
             try {
-                $this->helper->sendOrder($order);
+                $this->helper->sendCreateorUpdate($order);
             } catch (\Exception $e) {
                 $order->addCommentToStatusHistory($e->getMessage());
-            $this->logger->info("Failed in SalesOrderSaveAfter");
+                $this->logger->info("Failed in SalesOrderSaveAfter");
             }
         }
         return $this;

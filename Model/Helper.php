@@ -120,11 +120,18 @@ class Helper
             $this->logger->info("sendOrder ORDER NOT FOUND {$orderId}");
             return ['error' => 'ORDER NOT FOUND'];
         }
+        return this->sendCreateorUpdate(order;
+    }
 
-        $this->logger->info("before checking status");
+     /**
+     * @param $order
+     * @return |null
+     * @throws LocalizedException
+     */
+    public function sendCreateorUpdate($order) 
+    {
         $allowedStatusesOther = $this->configuration->getAllowedStatusesOther();
         $allowedStatusesCOD = $this->configuration->getAllowedStatusesCOD();
-        $this->logger->info("after checking status");
 
         if ((in_array($order->getStatus(), $allowedStatusesOther)
          && $order->getPayment()->getMethod() !== 'cashondelivery') || (in_array($order->getStatus(), $allowedStatusesCOD)
