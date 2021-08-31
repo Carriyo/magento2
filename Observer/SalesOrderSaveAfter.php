@@ -4,11 +4,17 @@
 
 namespace Carriyo\Shipment\Observer;
 
+use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Helper;
 use Magento\Framework\Event\ObserverInterface;
 
-class SalesOrderAddressSaveAfter implements ObserverInterface
+class SalesOrderSaveAfter implements ObserverInterface
 {
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     /**
      * @var \Magento\Framework\Registry
      */
@@ -23,11 +29,13 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        Helper $helper
+        Helper $helper,
+        Logger $logger
     )
     {
         $this->registry = $registry;
         $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     /**
@@ -36,11 +44,15 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $order = $observer->getEvent()->getAddress()->getOrder();
-        try {
-            $this->helper->sendOrderCreateOrUpdate($order);
-        } catch (\Exception $e) {
-            $order->addCommentToStatusHistory($e->getMessage());
+        $order = $observer->getEvent()->getOrder();
+        //Skip new order and updates without status change
+        if (!empty($order->getOrigData('status')) && $order->getStatus() !==  $order->getOrigData('status') ) {
+            try {
+                $this->helper->sendOrderCreateOrUpdate($order);
+            } catch (\Exception $e) {
+                $order->addCommentToStatusHistory($e->getMessage());
+                $this->logger->info("Failed in SalesOrderSaveAfter");
+            }
         }
         return $this;
     }

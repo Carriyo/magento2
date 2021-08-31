@@ -48,6 +48,10 @@ class Configuration
     // = Shipping Method Map
     const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
 
+    const CONFIG_PATH_ALLOWED_STATUSES_OTHER = 'carriyo/carriyo_mappings/allowed_statuses_other';
+
+    const CONFIG_PATH_ALLOWED_STATUSES_COD = 'carriyo/carriyo_mappings/allowed_statuses_cod';
+
     const CONFIG_PATH_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
 
     const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
@@ -247,6 +251,32 @@ class Configuration
     }
 
     /**
+     * @return array
+     */
+    public function getAllowedStatusesOther()
+    {
+        $allowedStatuses = $this->configReader->getValue(self::CONFIG_PATH_ALLOWED_STATUSES_OTHER);
+        $allowedStatusesList = [];
+        foreach (explode(",", $allowedStatuses) as $status) {
+            $allowedStatusesList[] = $status;
+        }
+        return $allowedStatusesList;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedStatusesCOD()
+    {
+        $allowedStatuses = $this->configReader->getValue(self::CONFIG_PATH_ALLOWED_STATUSES_COD);
+        $allowedStatusesList = [];
+        foreach (explode(",", $allowedStatuses) as $status) {
+            $allowedStatusesList[] = $status;
+        }
+        return $allowedStatusesList;
+    }
+
+    /**
      * @return string
      */
     public function getOrderStatusMap()
@@ -284,8 +314,8 @@ class Configuration
                 $shippingMap[$shippingValues[0]] = $shippingValues[1];
             }
 
-            if (array_key_exists($code, $this->getActiveShippingMethod())) {
-                $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
+            if (array_key_exists($code, $shippingMap)) {
+                $deliveryType = $shippingMap[$code];
             }
         } catch (\Exception $e) {
             //do nothing as value is already defaulted
@@ -296,7 +326,7 @@ class Configuration
     /**
      * @return array
      */
-    public function getActiveShippingMethod()
+    public function getActiveShippingMethods()
     {
         $activeCarriers = $this->shippingModelConfig->getActiveCarriers();
         $methods = array();

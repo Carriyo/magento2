@@ -11,7 +11,7 @@ use Carriyo\Shipment\Model\Helper;
 use Magento\Sales\Model\Order;
 
 /**
- * Increments number of coupon usages after placing order.
+ * Create a shipment in Carriyo when an order is placed
  */
 class CreateOrderPlugin
 {
@@ -45,19 +45,23 @@ class CreateOrderPlugin
     }
 
     /**
-     * @param Order $subject
+     * @param Order $order
      * @param Order $result
      * @return Order
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function afterPlace(Order $subject, Order $result): Order
+    public function afterPlace(Order $order, Order $result): Order
     {
+        //commented out because we are using the Sales Order Save After observer to create and update shipment in Carriyo
+        /* 
         try {
-            $shipmentId = $this->helper->sendOrderCreate($subject);
+            $shipmentId = $this->helper->sendOrderCreateOrUpdate($order);
         } catch (\Exception $e) {
-            $subject->addCommentToStatusHistory($e->getMessage());
+            $order->addCommentToStatusHistory($e->getMessage());
+            $this->logger->info("Failed in CreateOrderPlugin");
         }
         $this->registry->register('orderSentToCarriyo', 1);
-        return $subject;
+        */
+        return $order;
     }
 }
