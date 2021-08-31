@@ -44,6 +44,9 @@ class SalesOrderSaveAfter implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        $this->logger->info("order status: " . $order->getStatus());
+        $this->logger->info("previous order status: " . $order->getOrigData('status'));
+
         $order = $observer->getEvent()->getOrder();
         if ($order->getStatus() ===  $order->getOrigData('status') ) {
             return $this;
