@@ -49,6 +49,8 @@ class SalesOrderSaveAfter implements ObserverInterface
         $this->logger->info("previous order status: " . $order->getOrigData('status'));
         //Skip new order and updates without status change
         if (!empty($order->getOrigData('status')) && $order->getStatus() !==  $order->getOrigData('status') ) {
+            $this->logger->info("order status matched");
+
             try {
                 $this->helper->sendOrderCreateOrUpdate($order);
             } catch (\Exception $e) {
