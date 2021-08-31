@@ -11,7 +11,7 @@ use Carriyo\Shipment\Model\Helper;
 use Magento\Sales\Model\Order;
 
 /**
- * Increments number of coupon usages after placing order.
+ * Create a shipment in Carriyo when an order is placed
  */
 class CreateOrderPlugin
 {

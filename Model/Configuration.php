@@ -314,8 +314,8 @@ class Configuration
                 $shippingMap[$shippingValues[0]] = $shippingValues[1];
             }
 
-            if (array_key_exists($code, $this->getActiveShippingMethod())) {
-                $deliveryType = $shippingMap[$this->getActiveShippingMethod()[$code]];
+            if (array_key_exists($code, $shippingMap)) {
+                $deliveryType = $shippingMap[$code];
             }
         } catch (\Exception $e) {
             //do nothing as value is already defaulted
@@ -326,7 +326,7 @@ class Configuration
     /**
      * @return array
      */
-    public function getActiveShippingMethod()
+    public function getActiveShippingMethods()
     {
         $activeCarriers = $this->shippingModelConfig->getActiveCarriers();
         $methods = array();

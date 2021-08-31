@@ -91,17 +91,17 @@
                 <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Shipping Method Mapping</label>
-                    <comment>Map your Magento shipping methods to Carriyo delivery methods</comment>
-                </field>
-                <field id="allowed_statuses_other" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
-                       translate="label" type="textarea">
-                    <label>Allowed Order Statuses (Other Payment Types)</label>
-                    <comment>List of Magento statuses that are allowed to update Carriyo for non COD orders</comment>
+                    <comment>Map your Magento shipping methods to Carriyo delivery methods. Use the Shipping Method value from your Magento order.</comment>
                 </field>
                 <field id="allowed_statuses_cod" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Allowed Order Statuses (COD)</label>
                     <comment>List of Magento statuses that are allowed to update Carriyo for COD orders</comment>
+                </field>
+                <field id="allowed_statuses_other" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                       translate="label" type="textarea">
+                    <label>Allowed Order Statuses (Other Payment Types)</label>
+                    <comment>List of Magento statuses that are allowed to update Carriyo for non COD orders</comment>
                 </field>
                 <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">

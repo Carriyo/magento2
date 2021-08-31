@@ -14,6 +14,10 @@
 				<client_secret/>
 				<merchant/>
 			</api_credentials>
+			<api_endpoints>
+				<api_url>https://demo-api.carriyo.com</api_url>
+				<api_oauth_url>https://demo-auth.carriyo.com<api_oauth_url>
+			</api_endpoints>
 			<carriyo_mappings>
 				<shipping_methods_map/>
 				<allowed_statuses_other>processing</allowed_statuses_other>
