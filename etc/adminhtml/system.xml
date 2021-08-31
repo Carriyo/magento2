@@ -71,7 +71,7 @@
                 <field id="api_oauth_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15"
                        translate="label" type="text">
                     <label>API OAuth DOMAIN</label>
-                    <comment>https://demo-auth.carriyo.com</comment>
+                    <comment>eg: https://demo-auth.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
