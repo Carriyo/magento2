@@ -47,15 +47,14 @@ class SalesOrderSaveAfter implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $this->logger->info("order status: " . $order->getStatus());
         $this->logger->info("previous order status: " . $order->getOrigData('status'));
-        if ($order->getStatus() ===  $order->getOrigData('status') ) {
-            return $this;
-        }
+        if ($order->getStatus() !==  $order->getOrigData('status') ) {
 
-        try {
-            $this->helper->sendOrderCreateOrUpdate($order);
-        } catch (\Exception $e) {
-            $order->addCommentToStatusHistory($e->getMessage());
-            $this->logger->info("Failed in SalesOrderSaveAfter");
+            try {
+                $this->helper->sendOrderCreateOrUpdate($order);
+            } catch (\Exception $e) {
+                $order->addCommentToStatusHistory($e->getMessage());
+                $this->logger->info("Failed in SalesOrderSaveAfter");
+            }
         }
         return $this;
     }
