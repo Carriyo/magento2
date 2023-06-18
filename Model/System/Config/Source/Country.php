@@ -11,7 +11,7 @@ namespace Carriyo\Shipment\Model\System\Config\Source;
  *
  * @package Carriyo\Shipment\Model\System\Config\Source
  */
-class Country implements\Magento\Framework\Data\OptionSourceInterface
+class Country implements \Magento\Framework\Data\OptionSourceInterface
 {
 
     /**
