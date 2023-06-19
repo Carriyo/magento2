@@ -35,7 +35,7 @@ class OAuth extends AbstractHttp
                 'client_id' => $this->configuration->getClientId(),
                 'client_secret' => $this->configuration->getClientSecret()
             ];
-            $url = $this->configuration->getOauthUrl() . '/oauth/token';
+            $url = $this->configuration->getUrl() . '/oauth/token';
 
             $response = $client->post(
                  $url,

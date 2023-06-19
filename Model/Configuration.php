@@ -34,7 +34,6 @@ class Configuration
 
     //= API Endpoints
     const CONFIG_PATH_API_URL = 'carriyo/api_endpoints/api_url';
-    const CONFIG_PATH_API_OAUTH_URL = 'carriyo/api_endpoints/api_oauth_url';
 
     //= Pickup Address
     const CONFIG_PATH_CONTACT_NAME = 'carriyo/pickup_address/contact_name';
@@ -176,14 +175,6 @@ class Configuration
     public function getUrl()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_API_URL);
-    }
-
-    /**
-     * @return string
-     */
-    public function getOauthUrl()
-    {
-        return (string)$this->configReader->getValue(self::CONFIG_PATH_API_OAUTH_URL);
     }
 
     /**
