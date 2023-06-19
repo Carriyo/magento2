@@ -26,10 +26,10 @@ class Logger extends \Monolog\Logger
         parent::__construct("carriyo", ["handlers" => $this->handler]);
     }
 
-    public function error($message, array $context = array())
+    public function error($message, array $context = array()): void
     {
         //add helper method to send message to external system
-        return $this->addRecord(static::CRITICAL, $message, $context);
+        $this->addRecord(static::CRITICAL, $message, $context);
 
     }
 }
