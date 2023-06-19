@@ -26,30 +26,32 @@ This module integrates your ecommerce with Carriyo platform.
 ### Type 2: Composer
 
  - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require carriyo/module-shipment:"^1.2.5"`
+ - Install the module composer by running `composer require carriyo/module-shipment:"^1.2.7"`. Replace version number if you want to use a previous version of the Carriyo module.
  - enable the module by running `php bin/magento module:enable Carriyo_Shipment`
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
 
 ## Specifications
 
-The following fields can be find in
+The following settings can be found in
 `Stores -> Configuration -> Carriyo -> Settings`
 
- - API Credentials
-	- Api Key - (required)
-	- Tenant ID - (required) Have in mind that this field is case sensitive.
-	- Client ID - (required)
-	- Client Secret - (required)
-	- Merchant (required) - (required)
- -  API Endpoints
-	- Api URL - (required) The Carriyo API url
-	- Api OAuth URL - (required) The Carriyo autentication url
- -  Pickup Address
-	- Location Code - (required)
- -  Shipping Method Map
-	- Shipping Methods - (required) A map between your sipping methods labels and Carriyo shipping type. Exp `Flat Rate=STANDARD,Free Shipping=EXPRESS`
-
+- API Credentials
+  - Api Key - (required)
+  - Tenant ID - (required) Have in mind that this field is case sensitive.
+  - Client ID - (required)
+  - Client Secret - (required)
+  - Merchant (required) - (required)
+- API Endpoints
+  - Api URL - (required) The Carriyo API url
+  -  Pickup Address
+  - Location Code - (required)
+- Carriyo Mappings
+  - Shipping Methods - (required) A map between your sipping methods labels and Carriyo shipping type. Eg: `Flat Rate=STANDARD,Free Shipping=EXPRESS`
+  - Allowed Order Statuses (COD): List of Magento statuses that are allowed to update Carriyo for COD orders. Eg: `pending,processing`
+  - Allowed Order Statuses (Other Payment Types): List of Magento statuses that are allowed to update Carriyo for non COD orders. Eg: `processing`
+  - Order Status Mapping: Map Carriyo statuses to update Magento order status. Eg: `shipped=complete,cancelled=canceled`
+  - Shipment Reference Prefix: Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.
 
 ### Running in local environment
 In order to run this environment please make sure you have `docker` and `docker-compose` installed.

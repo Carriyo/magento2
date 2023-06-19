@@ -67,18 +67,18 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
         if (!isset($payload['references'])) {
             $this->returnHttpResponse(400, 'MISSING references');
         }
-        if (!isset($payload['references']['partner_shipment_reference'])) {
-            $this->returnHttpResponse(400, 'MISSING partner_shipment_reference');
+        if (!isset($payload['references']['partner_order_reference'])) {
+            $this->returnHttpResponse(400, 'MISSING partner_order_reference');
         }
         if (!isset($payload['post_shipping_info']['status'])) {
             $this->returnHttpResponse(400, 'MISSING status');
         }
 
-        $shipmentRef = $payload['references']['partner_shipment_reference'];
+        $orderRef = $payload['references']['partner_order_reference'];
         $carriyoStatus = $payload['post_shipping_info']['status'];
 
         try {
-            $this->helper->updateOrder($shipmentRef, $carriyoStatus);
+            $this->helper->updateOrder($orderRef, $carriyoStatus);
             $this->returnHttpResponse(200, 'STATUS UPDATED');
         } catch (\Exception $e) {
             $this->returnHttpResponse(400, $e->getMessage());

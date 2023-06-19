@@ -65,13 +65,7 @@
                 <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label"
                        type="text">
                     <label>API Domain</label>
-                    <comment>eg: https://demo-api.carriyo.com</comment>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="api_oauth_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15"
-                       translate="label" type="text">
-                    <label>API OAuth DOMAIN</label>
-                    <comment>eg: https://demo-auth.carriyo.com</comment>
+                    <comment>eg: https://api.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
@@ -91,27 +85,27 @@
                 <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Shipping Method Mapping</label>
-                    <comment>Map your Magento shipping methods to Carriyo delivery methods. Use the Shipping Method value from your Magento order.</comment>
+                    <comment>Map your Magento shipping methods to Carriyo delivery methods. Use the Shipping Method value from your Magento order. Eg: `Flat Rate=STANDARD,Free Shipping=EXPRESS`</comment>
                 </field>
                 <field id="allowed_statuses_cod" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Allowed Order Statuses (COD)</label>
-                    <comment>List of Magento statuses that are allowed to update Carriyo for COD orders</comment>
+                    <comment>List of Magento statuses that are allowed to update Carriyo for COD orders. Eg: `pending,processing`</comment>
                 </field>
                 <field id="allowed_statuses_other" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Allowed Order Statuses (Other Payment Types)</label>
-                    <comment>List of Magento statuses that are allowed to update Carriyo for non COD orders</comment>
+                    <comment>List of Magento statuses that are allowed to update Carriyo for non COD orders. Eg: `processing`</comment>
                 </field>
                 <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Order Status Mapping</label>
-                    <comment>Map Carriyo statuses to Magento statuses</comment>
+                    <comment>Map Carriyo statuses to update Magento order status. Eg: `shipped=complete,cancelled=canceled`</comment>
                 </field>
                 <field id="shipment_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="text">
                     <label>Shipment Reference Prefix</label>
-                    <comment> Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.</comment>
+                    <comment>Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.</comment>
                     <validate>validate-no-html-tags</validate>
                 </field>
             </group>
