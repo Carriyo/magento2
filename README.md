@@ -37,20 +37,19 @@ The following settings can be found in
 `Stores -> Configuration -> Carriyo -> Settings`
 
 - API Credentials
-  - Api Key - (required)
-  - Tenant ID - (required) Have in mind that this field is case sensitive.
+  - API Domain - (required)
+  - API Key - (required)
+  - Tenant ID - (required)
+  - Merchant ID - (required)
   - Client ID - (required)
   - Client Secret - (required)
-  - Merchant (required) - (required)
-- API Endpoints
-  - Api URL - (required) The Carriyo API url
-  -  Pickup Address
+- Pickup Address
   - Location Code - (required)
 - Carriyo Mappings
   - Shipping Methods - (required) A map between your sipping methods labels and Carriyo shipping type. Eg: `Flat Rate=STANDARD,Free Shipping=EXPRESS`
   - Allowed Order Statuses (COD): List of Magento statuses that are allowed to update Carriyo for COD orders. Eg: `pending,processing`
   - Allowed Order Statuses (Other Payment Types): List of Magento statuses that are allowed to update Carriyo for non COD orders. Eg: `processing`
-  - Order Status Mapping: Map Carriyo statuses to update Magento order status. Eg: `shipped=complete,cancelled=canceled`
+  - Order Status Mapping: Map Carriyo statuses to update the Magento order status. Eg: `shipped=complete,cancelled=canceled`
   - Shipment Reference Prefix: Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.
 
 ### Running in local environment
