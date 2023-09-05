@@ -32,12 +32,6 @@
                     <comment>eg: https://api.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
-                        type="obscure">
-                    <label>API Key</label>
-                    <comment/>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
                 <field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                        translate="label" type="text">
                     <label>Tenant ID</label>
@@ -48,6 +42,12 @@
                        translate="label" type="text">
                     <label>Merchant ID</label>
                     <comment>* Provide the Merchant ID (case sensitive)</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
+                        type="obscure">
+                    <label>API Key</label>
+                    <comment/>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"

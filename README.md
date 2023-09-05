@@ -38,9 +38,9 @@ The following settings can be found in
 
 - API Credentials
   - API Domain - (required)
-  - API Key - (required)
   - Tenant ID - (required)
   - Merchant ID - (required)
+  - API Key - (required)
   - Client ID - (required)
   - Client Secret - (required)
 - Pickup Address
