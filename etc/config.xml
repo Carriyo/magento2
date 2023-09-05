@@ -9,14 +9,13 @@
 	<default>
 		<carriyo>
 			<api_credentials>
-				<api_key/>
-				<tenant_id/>
-				<client_secret/>
-				<merchant/>
-			</api_credentials>
-			<api_endpoints>
 				<api_url>https://api.carriyo.com</api_url>
-			</api_endpoints>
+				<tenant_id/>
+				<merchant/>
+				<api_key/>
+				<client_id/>
+				<client_secret/>
+			</api_credentials>
 			<carriyo_mappings>
 				<shipping_methods_map/>
 				<allowed_statuses_other>processing</allowed_statuses_other>

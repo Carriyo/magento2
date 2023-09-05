@@ -138,8 +138,11 @@ class Helper
          && $order->getPayment()->getMethod() !== 'cashondelivery') || (in_array($order->getStatus(), $allowedStatusesCOD)
          && $order->getPayment()->getMethod() === 'cashondelivery')) {
             foreach ($order->getAllStatusHistory() as $orderComment) {
-                if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0) {
-                    return $this->sendOrderUpdate($order);
+                //invoke update order if draft shipment has already been created in Carriyo
+                if (is_string($orderComment->getComment())) {
+                    if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0) {
+                        return $this->sendOrderUpdate($order);
+                    }
                 }
             }
             $shipmentId = $this->sendOrderCreate($order);

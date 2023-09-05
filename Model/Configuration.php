@@ -26,14 +26,12 @@ class Configuration
     const CONFIG_PATH_ACTIVE = 'carriyo/general/active';
 
     //= API Credentials
+    const CONFIG_PATH_API_URL = 'carriyo/api_credentials/api_url';
     const CONFIG_PATH_API_KEY = 'carriyo/api_credentials/api_key';
     const CONFIG_PATH_TENANT_ID = 'carriyo/api_credentials/tenant_id';
     const CONFIG_PATH_CLIENT_ID = 'carriyo/api_credentials/client_id';
     const CONFIG_PATH_CLIENT_SECRET = 'carriyo/api_credentials/client_secret';
     const CONFIG_PATH_MERCHANT = 'carriyo/api_credentials/merchant';
-
-    //= API Endpoints
-    const CONFIG_PATH_API_URL = 'carriyo/api_endpoints/api_url';
 
     //= Pickup Address
     const CONFIG_PATH_CONTACT_NAME = 'carriyo/pickup_address/contact_name';

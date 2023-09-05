@@ -61,7 +61,7 @@ class Client extends AbstractHttp
             $body = $this->getRequestBody($order);
             $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
             $response = $this->getClient()
-                ->post($this->configuration->getUrl() . '/shipments/draft', ['json' => $body]);
+                ->post($this->configuration->getUrl() . '/shipments?draft=true', ['json' => $body]);
 
         } catch (\Exception $exception) {
             $this->logger->info('Failed sending draft shipment to ' . $this->configuration->getUrl());
@@ -102,7 +102,7 @@ class Client extends AbstractHttp
             $body = $this->getRequestBody($order);
             $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
             $response = $this->getClient()
-                ->patch($this->configuration->getUrl() . "/shipments/draft/" . $this->configuration->getShipmentReference($order->getIncrementId()), ['json' => $body]);
+                ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($order->getIncrementId()), ['json' => $body]);
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
             $this->logger->info('Failed sending draft shipment to ' . $this->configuration->getUrl());

@@ -26,16 +26,28 @@
             <group id="api_credentials" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                    translate="label">
                 <label>API Credentials</label>
-                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
+                <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
                        type="text">
-                    <label>API Key</label>
-                    <comment/>
+                    <label>API Domain</label>
+                    <comment>eg: https://api.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                        translate="label" type="text">
                     <label>Tenant ID</label>
                     <comment>* Provide the Tenant ID (case sensitive)</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                       translate="label" type="text">
+                    <label>Merchant ID</label>
+                    <comment>* Provide the Merchant ID (case sensitive)</comment>
+                    <validate>required-entry validate-no-html-tags</validate>
+                </field>
+                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
+                        type="obscure">
+                    <label>API Key</label>
+                    <comment/>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
@@ -50,22 +62,6 @@
                     <comment/>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <config_path>carriyo/api_credentials/client_secret</config_path>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-                <field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
-                       translate="label" type="text">
-                    <label>Merchant</label>
-                    <comment>* Provide the Merchant ID (case sensitive)</comment>
-                    <validate>required-entry validate-no-html-tags</validate>
-                </field>
-            </group>
-            <group id="api_endpoints" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15"
-                   translate="label">
-                <label>API Endpoints</label>
-                <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label"
-                       type="text">
-                    <label>API Domain</label>
-                    <comment>eg: https://api.carriyo.com</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
             </group>
