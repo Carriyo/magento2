@@ -140,6 +140,10 @@ class Client extends AbstractHttp
             }
 
             $body = [
+                'entity_type' => 'FORWARD',
+                'source' => [
+                    'source_type'=> 'magento_connector'
+                ],
                 'references' => [
                     'partner_order_reference' => $order->getIncrementId(),
                     'partner_shipment_reference' => $this->configuration->getShipmentReference($shipment->getIncrementId()),
@@ -224,6 +228,10 @@ class Client extends AbstractHttp
         }
 
         $body = [
+            'entity_type' => 'FORWARD',
+            'source' => [
+                'source_type'=> 'magento_connector'
+            ],
             'references' => [
                 'partner_order_reference' => $order->getIncrementId(),
                 'partner_shipment_reference' => $this->configuration->getShipmentReference($order->getIncrementId())
