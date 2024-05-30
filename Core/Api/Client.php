@@ -135,6 +135,10 @@ class Client extends AbstractHttp
                     'price' => [
                         'amount' => (float)$item->getPrice(),
                         'currency' => $order->getOrderCurrencyCode()
+                    ],
+                    'weight' => [
+                        'value' => (float)$item->getWeight(),
+                        'unit' => 'kg'
                     ]
                 ];
             }
@@ -158,6 +162,20 @@ class Client extends AbstractHttp
                     'delivery_type' => $this->configuration->getDeliveryType($order->getShippingMethod())
                 ],
                 'items' => $items,
+                'parcels' => [
+                    [
+                        'weight' => [
+                            'value' => (float)$order->getWeight(),
+                            'unit' => 'kg'
+                        ],
+                        'dimension' => [
+                            'width' => 10,
+                            'height' => 10,
+                            'depth' => 10,
+                            'unit' => 'cm'
+                        ]
+                    ]
+                ],
                 'pickup' => [
                     'partner_location_code' => $this->configuration->getLocationCode()
                 ],
@@ -223,7 +241,11 @@ class Client extends AbstractHttp
                     'amount' => (float)$item->getPriceInclTax(),
                     'currency' => $order->getOrderCurrencyCode()
                 ],
-                'dangerous_goods' => false
+                'dangerous_goods' => false,
+                'weight' => [
+                    'value' => (float)$item->getWeight(),
+                    'unit' => 'kg'
+                ],
             ];
         }
 
@@ -247,6 +269,20 @@ class Client extends AbstractHttp
                 'scheduled_date' => ''
             ],
             'items' => $items,
+            'parcels' => [
+                [
+                    'weight' => [
+                        'value' => (float)$order->getWeight(),
+                        'unit' => 'kg'
+                    ],
+                    'dimension' => [
+                        'width' => 10,
+                        'height' => 10,
+                        'depth' => 10,
+                        'unit' => 'cm'
+                    ]
+                ]
+            ],
             'pickup' => [
                 'partner_location_code' => $this->configuration->getLocationCode()
             ],
