@@ -51,7 +51,7 @@ class Send extends \Magento\Backend\App\Action
                 $shipmentId = $this->helper->sendOrder($orderId);
                 if (!empty($shipmentId)) {
                     $this->messageManager->addSuccessMessage(
-                        'Successfully Created/Updated Draft Shipment : ' . $shipmentId . ' on Carriyo.'
+                        'Successfully Created/Updated Shipment : ' . $shipmentId . ' in Carriyo.'
                     );
                 }
             }

@@ -138,7 +138,7 @@ class Helper
          && $order->getPayment()->getMethod() !== 'cashondelivery') || (in_array($order->getStatus(), $allowedStatusesCOD)
          && $order->getPayment()->getMethod() === 'cashondelivery')) {
             foreach ($order->getAllStatusHistory() as $orderComment) {
-                //invoke update order if draft shipment has already been created in Carriyo
+                //invoke update order if shipment has already been created in Carriyo
                 if (is_string($orderComment->getComment())) {
                     if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0) {
                         return $this->sendOrderUpdate($order);
@@ -174,9 +174,9 @@ class Helper
         if (!$this->configuration->isActive()) {
             return $shipmentId;
         }
-
+        $autoBookShipments = $this->configuration->isAutoBookShipments();
         try {
-            $response = $this->carriyoClient->sendOrderDraft($order);
+            $response = $this->carriyoClient->createShipment($order, $autoBookShipments);
             if (!array_key_exists('errors', $response)) {
                 $shipmentId = $response["shipment_id"];
                 $this->logger->info("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
@@ -191,8 +191,7 @@ class Helper
 
         } catch (\Exception $e) {
             $this->logger->info("Carriyo Error while sendingOrderDetails {$orderId} " . $e->getMessage() . " Trace " . $e->getTraceAsString());
-            throw new LocalizedException(__('Carriyo SendDraftShipmentError %1', $e->getMessage()));
-
+            throw new LocalizedException(__('Carriyo createShipment Error %1', $e->getMessage()));
         }
 
         return $shipmentId;
@@ -210,8 +209,9 @@ class Helper
         }
         $orderId = $order->getIncrementId();
         $shipmentId = null;
+        $autoBookShipments = $this->configuration->isAutoBookShipments();
         try {
-            $response = $this->carriyoClient->sendUpdateOrderDraft($order);
+            $response = $this->carriyoClient->updateShipment($order, $autoBookShipments);
             if (!array_key_exists('errors', $response)) {
                 $shipmentId = $response["shipment_id"];
                 $this->logger->info("Carriyo Response ShipmentId {$orderId} ::" . $shipmentId);
@@ -223,7 +223,7 @@ class Helper
 
         } catch (\Exception $e) {
             $this->logger->info("Carriyo Error while sendOrderUpdate {$orderId} :: " . $e->getMessage() . " Trace" . $e->getTraceAsString());
-            throw new LocalizedException(__('Carriyo SendShipmentDraftError %1', $e->getMessage()));
+            throw new LocalizedException(__('Carriyo updateShipment Error %1', $e->getMessage()));
         }
         return $shipmentId;
     }
@@ -238,7 +238,7 @@ class Helper
             return;
         }
         try {
-            $response = $this->carriyoClient->sendOrderCancel($orderId);
+            $response = $this->carriyoClient->cancelShipment($orderId);
             if (!array_key_exists('errors', $response)) {
                 $this->logger->info("Carriyo Cancel Order {$orderId} ::" . print_r($response, 1));
             }
@@ -248,8 +248,8 @@ class Helper
             }
 
         } catch (\Exception $e) {
-            $this->logger->info("Carriyo Error while sendOrderCancel {$orderId} " . $e->getMessage() . " Trace" . $e->getTraceAsString());
-            throw new LocalizedException(__('Carriyo CancelShipmentError %1', $e->getMessage()));
+            $this->logger->info("Carriyo Error while cancelShipment {$orderId} " . $e->getMessage() . " Trace" . $e->getTraceAsString());
+            throw new LocalizedException(__('Carriyo cancelShipment Error %1', $e->getMessage()));
         }
         return;
     }
