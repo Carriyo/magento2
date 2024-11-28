@@ -17,6 +17,7 @@
 				<client_secret/>
 			</api_credentials>
 			<carriyo_mappings>
+				<auto_book_shipments/>
 				<shipping_methods_map/>
 				<allowed_statuses_other>processing</allowed_statuses_other>
 				<allowed_statuses_cod>pending,processing</allowed_statuses_cod>

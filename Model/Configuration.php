@@ -42,6 +42,8 @@ class Configuration
     const CONFIG_PATH_COUNTRY = 'carriyo/pickup_address/country';
     const CONFIG_PATH_LOCATION_CODE = 'carriyo/pickup_address/location_code';
 
+    const CONFIG_PATH_AUTO_BOOK_SHIPMENTS = 'carriyo/carriyo_mappings/auto_book_shipments';
+
     // = Shipping Method Map
     const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
 
@@ -229,6 +231,14 @@ class Configuration
     public function getCountry()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_COUNTRY);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoBookShipments()
+    {
+        return (bool)$this->configReader->getValue(self::CONFIG_PATH_AUTO_BOOK_SHIPMENTS);
     }
 
     /**

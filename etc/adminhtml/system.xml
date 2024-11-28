@@ -44,10 +44,10 @@
                     <comment>* Provide the Merchant ID (case sensitive)</comment>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
-                        type="obscure">
+                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="obscure">
                     <label>API Key</label>
                     <comment/>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
                 <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
@@ -78,6 +78,12 @@
             <group id="carriyo_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">
                 <label>Carriyo Mappings</label>
+                <field id="auto_book_shipments" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Auto Book Shipments</label>
+                    <comment>Enable this option if you wish to automatically book (confirm) shipments.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Shipping Method Mapping</label>

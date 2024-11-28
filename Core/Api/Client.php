@@ -53,19 +53,22 @@ class Client extends AbstractHttp
      * @param \Magento\Sales\Api\Data\ShipmentInterface $shipment
      * @return array|bool|float|int|string|null
      */
-    public function sendOrderDraft(OrderInterface $order)
+    public function createShipment(OrderInterface $order, bool $autoBookShipments)
     {
         $response = null;
         try {
-            /** @var Address $shippingAddress */
             $body = $this->getRequestBody($order);
             $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            $url = $this->configuration->getUrl() . '/shipments';
+            if(!$autoBookShipments) {
+                $url = $url . '?draft=true';
+            }
             $response = $this->getClient()
-                ->post($this->configuration->getUrl() . '/shipments?draft=true', ['json' => $body]);
+                ->post($url, ['json' => $body]);
 
         } catch (\Exception $exception) {
-            $this->logger->info('Failed sending draft shipment to ' . $this->configuration->getUrl());
-            $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
+            $this->logger->info('Failed sending create shipment to ' . $this->configuration->getUrl());
+            $this->logger->info('Carriyo createShipment Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -75,7 +78,7 @@ class Client extends AbstractHttp
      * @param $orderId
      * @return array|bool|float|int|string|null
      */
-    public function sendOrderCancel($orderId)
+    public function cancelShipment($orderId)
     {
         $response = null;
         try {
@@ -84,7 +87,7 @@ class Client extends AbstractHttp
                 ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($orderId) . "/cancel");
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->info('Carriyo sendOrderCancel Exception ' . $exception->getMessage());
+            $this->logger->info('Carriyo cancelShipment Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -94,19 +97,24 @@ class Client extends AbstractHttp
      * @param OrderInterface $order
      * @return array|bool|float|int|string|null
      */
-    public function sendUpdateOrderDraft(OrderInterface $order)
+    public function updateShipment(OrderInterface $order, bool $autoBookShipments)
     {
         $response = null;
         try {
-            /** @var Address $shippingAddress */
             $body = $this->getRequestBody($order);
             $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
-            $response = $this->getClient()
-                ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($order->getIncrementId()), ['json' => $body]);
-
+            $url = $this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($order->getIncrementId());
+            if($autoBookShipments) {
+                $url = $url . '/confirm';
+                $response = $this->getClient()
+                    ->post($url, ['json' => $body]);
+            } else {
+                $response = $this->getClient()
+                    ->patch($url, ['json' => $body]);
+            }
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->info('Failed sending draft shipment to ' . $this->configuration->getUrl());
-            $this->logger->info('Carriyo sendOrderDraft Exception ' . $exception->getMessage());
+            $this->logger->info('Failed sending update shipment request to ' . $this->configuration->getUrl());
+            $this->logger->info('Carriyo updateShipment Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
