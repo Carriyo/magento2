@@ -140,7 +140,8 @@ class Helper
             foreach ($order->getAllStatusHistory() as $orderComment) {
                 //invoke update order if shipment has already been created in Carriyo
                 if (is_string($orderComment->getComment())) {
-                    if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0) {
+                    //TODO: Remove the DraftShipmentId# check in the future as we are now setting ShipmentId#
+                    if (strpos($orderComment->getComment(), 'Carriyo DraftShipmentId#') === 0 || strpos($orderComment->getComment(), 'Carriyo ShipmentId#') === 0) {
                         return $this->sendOrderUpdate($order);
                     }
                 }
@@ -182,7 +183,7 @@ class Helper
                 $this->logger->info("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
 
                 if (!empty($shipmentId)) {
-                    $order->addCommentToStatusHistory("Carriyo DraftShipmentId# " . $shipmentId);
+                    $order->addCommentToStatusHistory("Carriyo ShipmentId# " . $shipmentId);
                 }
             }
             if (array_key_exists('errors', $response)) {
