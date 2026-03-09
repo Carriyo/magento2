@@ -58,7 +58,9 @@ class Client extends AbstractHttp
         $response = null;
         try {
             $body = $this->getRequestBody($order);
-            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->info("Carriyo createShipment Request Body {$order->getIncrementId()} " . print_r($body, 1));
+            }
             $url = $this->configuration->getUrl() . '/shipments';
             if(!$autoBookShipments) {
                 $url = $url . '?draft=true';
@@ -102,7 +104,9 @@ class Client extends AbstractHttp
         $response = null;
         try {
             $body = $this->getRequestBody($order);
-            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->info("Carriyo updateShipment Request Body {$order->getIncrementId()} " . print_r($body, 1));
+            }
             $url = $this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($order->getIncrementId());
             if($autoBookShipments) {
                 $url = $url . '/confirm';
@@ -185,6 +189,10 @@ class Client extends AbstractHttp
                 $body['merchant'] = $this->configuration->getMerchant();
             }
 
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->info("Carriyo send Request Body {$order->getIncrementId()} " . print_r($body, 1));
+            }
+
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
@@ -209,13 +217,15 @@ class Client extends AbstractHttp
                 'tenant-id' => $this->configuration->getTenantId()
             ];
 
-            $this->logger->info(
-                'Carriyo Auth Debug Headers: ' . print_r([
-                    'x-api-key' => $this->headers['x-api-key'] ?? null,
-                    'tenant-id' => $this->headers['tenant-id'] ?? null,
-                    'Authorization' => $this->headers['Authorization'] ?? null,
-                ], true)
-            );
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->info(
+                    'Carriyo Auth Debug Headers: ' . print_r([
+                        'x-api-key' => $this->headers['x-api-key'] ?? null,
+                        'tenant-id' => $this->headers['tenant-id'] ?? null,
+                        'Authorization' => $this->headers['Authorization'] ?? null,
+                    ], true)
+                );
+            }
         }
     }
 

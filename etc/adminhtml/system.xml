@@ -15,10 +15,16 @@
             <tab>carriyo</tab>
             <resource>Carriyo_Shipment::config_carriyo_shipment</resource>
             <group id="general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
-                <label>Enable module</label>
+                <label>General</label>
                 <field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1"
                        showInStore="1">
-                    <label>Enable</label>
+                    <label>Enable Carriyo Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="debug" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable Debug Logging</label>
+                    <comment>If enabled, Carriyo requests will log headers (including OAuth token) and payloads to carriyo.log. Disable in production.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <attribute type="expanded">1</attribute>
