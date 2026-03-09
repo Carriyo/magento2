@@ -150,8 +150,9 @@ class Helper
             $this->orderRepository->save($order);
             return $shipmentId;
         } else {
-            $this->logger->info("Carriyo Shipment skipped because the order status is not allowed Order ID: {$orderId} :: Status: " . $order->getStatus());
-                
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug("Carriyo Shipment skipped because the order status is not allowed Order ID: {$orderId} :: Status: " . $order->getStatus());
+            }
             $order->addCommentToStatusHistory("Carriyo Shipment Skipped (status not allowed)");
             $this->orderRepository->save($order);
         }
@@ -180,7 +181,9 @@ class Helper
             $response = $this->carriyoClient->createShipment($order, $autoBookShipments);
             if (!array_key_exists('errors', $response)) {
                 $shipmentId = $response["shipment_id"];
-                $this->logger->info("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
+                if ($this->configuration->isDebugEnabled()) {
+                    $this->logger->debug("Carriyo Response ShipmentId {$orderId}::" . $shipmentId);
+                }
 
                 if (!empty($shipmentId)) {
                     $order->addCommentToStatusHistory("Carriyo ShipmentId# " . $shipmentId);
@@ -191,7 +194,7 @@ class Helper
             }
 
         } catch (\Exception $e) {
-            $this->logger->info("Carriyo Error while sendingOrderDetails {$orderId} " . $e->getMessage() . " Trace " . $e->getTraceAsString());
+            $this->logger->error("Carriyo Error while sendingOrderDetails {$orderId} " . $e->getMessage() . " Trace " . $e->getTraceAsString());
             throw new LocalizedException(__('Carriyo createShipment Error %1', $e->getMessage()));
         }
 
@@ -215,15 +218,19 @@ class Helper
             $response = $this->carriyoClient->updateShipment($order, $autoBookShipments);
             if (!array_key_exists('errors', $response)) {
                 $shipmentId = $response["shipment_id"];
-                $this->logger->info("Carriyo Response ShipmentId {$orderId} ::" . $shipmentId);
+                if ($this->configuration->isDebugEnabled()) {
+                    $this->logger->debug("Carriyo Response ShipmentId {$orderId} ::" . $shipmentId);
+                }
             }
             if (array_key_exists('errors', $response)) {
-                $this->logger->info("Carriyo Response Error {$orderId} ::" . $response['errors']);
+                if ($this->configuration->isDebugEnabled()) {
+                    $this->logger->debug("Carriyo Response Error {$orderId} ::" . $response['errors']);
+                }
                 throw new LocalizedException(__($response['errors']));
             }
 
         } catch (\Exception $e) {
-            $this->logger->info("Carriyo Error while sendOrderUpdate {$orderId} :: " . $e->getMessage() . " Trace" . $e->getTraceAsString());
+            $this->logger->error("Carriyo Error while sendOrderUpdate {$orderId} :: " . $e->getMessage() . " Trace" . $e->getTraceAsString());
             throw new LocalizedException(__('Carriyo updateShipment Error %1', $e->getMessage()));
         }
         return $shipmentId;
@@ -241,15 +248,19 @@ class Helper
         try {
             $response = $this->carriyoClient->cancelShipment($orderId);
             if (!array_key_exists('errors', $response)) {
-                $this->logger->info("Carriyo Cancel Order {$orderId} ::" . print_r($response, 1));
+                if ($this->configuration->isDebugEnabled()) {
+                    $this->logger->debug("Carriyo Cancel Order {$orderId} ::" . print_r($response, 1));
+                }
             }
             if (array_key_exists('errors', $response)) {
-                $this->logger->info("Carriyo Response Error {$orderId}::" . $response['errors']);
+                if ($this->configuration->isDebugEnabled()) {
+                    $this->logger->debug("Carriyo Response Error {$orderId}::" . $response['errors']);
+                }
                 throw new LocalizedException(__($response['errors']));
             }
 
         } catch (\Exception $e) {
-            $this->logger->info("Carriyo Error while cancelShipment {$orderId} " . $e->getMessage() . " Trace" . $e->getTraceAsString());
+            $this->logger->error("Carriyo Error while cancelShipment {$orderId} " . $e->getMessage() . " Trace" . $e->getTraceAsString());
             throw new LocalizedException(__('Carriyo cancelShipment Error %1', $e->getMessage()));
         }
         return;
@@ -263,16 +274,18 @@ class Helper
      */
     public function updateOrder($orderId, $status)
     {
-        $this->logger->info("Carriyo webhook invoked for OrderId {$orderId}");
+        if ($this->configuration->isDebugEnabled()) {
+            $this->logger->debug("Carriyo webhook invoked for OrderId {$orderId}");
+        }
         $order = $this->orderFactory->create()->loadByIncrementId($orderId);
         if (!$order->getId()) {
-            $this->logger->info("{$orderId} ORDER NOT FOUND");
+            $this->logger->error("{$orderId} ORDER NOT FOUND");
             throw new LocalizedException(__("{$orderId} ORDER NOT FOUND"));
         }
         try {
             $mageStatus = $this->configuration->getCarriyoMappedStatuses();
             if (!isset($mageStatus[$status])) {
-                $this->logger->info("Carriyo Status Not Mapped To Magento Status");
+                $this->logger->error("Carriyo Status Not Mapped To Magento Status");
                 throw new LocalizedException(__("INVALID STATUS {$status} "));
             }
             $order
@@ -281,7 +294,7 @@ class Helper
                 );
             $this->orderRepository->save($order);
         } catch (\Exception $e) {
-            $this->logger->info("Error updateOrder " . $e->getTraceAsString());
+            $this->logger->error("Error updateOrder " . $e->getTraceAsString());
             throw new LocalizedException(__("UPDATE ORDER ID# {$orderId}  FAILED Reason :: " . $e->getMessage()));
         }
         return true;
