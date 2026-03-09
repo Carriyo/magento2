@@ -123,7 +123,10 @@ class Configuration
      */
     public function getApiKey()
     {
-        return (string)$this->configReader->getValue(self::CONFIG_PATH_API_KEY);
+        // You MUST decrypt this because system.xml is encrypting it on save
+        return (string)$this->decryptor->decrypt(
+            $this->configReader->getValue(self::CONFIG_PATH_API_KEY)
+        );
     }
 
     /**
