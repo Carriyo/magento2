@@ -13,5 +13,5 @@
     },
     "prefer-stable": false,
     "minimum-stability": "dev",
-    "version": "1.3.0"
+    "version": "1.3.1"
 }

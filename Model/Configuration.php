@@ -24,6 +24,7 @@ class Configuration
 
     //= General
     const CONFIG_PATH_ACTIVE = 'carriyo/general/active';
+    const CONFIG_PATH_DEBUG = 'carriyo/general/debug';
 
     //= API Credentials
     const CONFIG_PATH_API_URL = 'carriyo/api_credentials/api_url';
@@ -123,7 +124,10 @@ class Configuration
      */
     public function getApiKey()
     {
-        return (string)$this->configReader->getValue(self::CONFIG_PATH_API_KEY);
+        // You MUST decrypt this because system.xml is encrypting it on save
+        return (string)$this->decryptor->decrypt(
+            $this->configReader->getValue(self::CONFIG_PATH_API_KEY)
+        );
     }
 
     /**
@@ -297,6 +301,14 @@ class Configuration
     public function isActive()
     {
         return (bool)$this->configReader->getValue(self::CONFIG_PATH_ACTIVE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebugEnabled()
+    {
+        return (bool)$this->configReader->getValue(self::CONFIG_PATH_DEBUG);
     }
 
     /**

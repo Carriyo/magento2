@@ -58,7 +58,9 @@ class Client extends AbstractHttp
         $response = null;
         try {
             $body = $this->getRequestBody($order);
-            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug("Carriyo createShipment Request Body {$order->getIncrementId()} " . print_r($body, 1));
+            }
             $url = $this->configuration->getUrl() . '/shipments';
             if(!$autoBookShipments) {
                 $url = $url . '?draft=true';
@@ -67,8 +69,8 @@ class Client extends AbstractHttp
                 ->post($url, ['json' => $body]);
 
         } catch (\Exception $exception) {
-            $this->logger->info('Failed sending create shipment to ' . $this->configuration->getUrl());
-            $this->logger->info('Carriyo createShipment Exception ' . $exception->getMessage());
+            $this->logger->error('Failed sending create shipment to ' . $this->configuration->getUrl());
+            $this->logger->error('Carriyo createShipment Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -82,12 +84,14 @@ class Client extends AbstractHttp
     {
         $response = null;
         try {
-            $this->logger->info("Carriyo Cancel Request " . $orderId);
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug("Carriyo Cancel Request " . $orderId);
+            }
             $response = $this->getClient()
                 ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($orderId) . "/cancel");
 
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->info('Carriyo cancelShipment Exception ' . $exception->getMessage());
+            $this->logger->error('Carriyo cancelShipment Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -102,7 +106,9 @@ class Client extends AbstractHttp
         $response = null;
         try {
             $body = $this->getRequestBody($order);
-            $this->logger->info("Carriyo Request {$order->getIncrementId()} " . print_r($body, 1));
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug("Carriyo updateShipment Request Body {$order->getIncrementId()} " . print_r($body, 1));
+            }
             $url = $this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($order->getIncrementId());
             if($autoBookShipments) {
                 $url = $url . '/confirm';
@@ -113,8 +119,8 @@ class Client extends AbstractHttp
                     ->patch($url, ['json' => $body]);
             }
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->info('Failed sending update shipment request to ' . $this->configuration->getUrl());
-            $this->logger->info('Carriyo updateShipment Exception ' . $exception->getMessage());
+            $this->logger->error('Failed sending update shipment request to ' . $this->configuration->getUrl());
+            $this->logger->error('Carriyo updateShipment Exception ' . $exception->getMessage());
             return ['errors' => $exception->getMessage()];
         }
         return $this->serializer->unserialize($response->getBody()->getContents());
@@ -185,6 +191,10 @@ class Client extends AbstractHttp
                 $body['merchant'] = $this->configuration->getMerchant();
             }
 
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug("Carriyo send Request Body {$order->getIncrementId()} " . print_r($body, 1));
+            }
+
             $response = $this->getClient()
                 ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
@@ -208,6 +218,16 @@ class Client extends AbstractHttp
                 'Authorization' => 'Bearer ' . $this->oauth->getAccessToken(),
                 'tenant-id' => $this->configuration->getTenantId()
             ];
+
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug(
+                    'Carriyo Auth Debug Headers: ' . print_r([
+                        'x-api-key' => $this->headers['x-api-key'] ?? null,
+                        'tenant-id' => $this->headers['tenant-id'] ?? null,
+                        'Authorization' => $this->headers['Authorization'] ?? null,
+                    ], true)
+                );
+            }
         }
     }
 
