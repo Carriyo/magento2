@@ -208,6 +208,14 @@ class Client extends AbstractHttp
                 'Authorization' => 'Bearer ' . $this->oauth->getAccessToken(),
                 'tenant-id' => $this->configuration->getTenantId()
             ];
+
+            $this->logger->info(
+                'Carriyo Auth Debug Headers: ' . print_r([
+                    'x-api-key' => $this->headers['x-api-key'] ?? null,
+                    'tenant-id' => $this->headers['tenant-id'] ?? null,
+                    'Authorization' => $this->headers['Authorization'] ?? null,
+                ], true)
+            );
         }
     }
 
