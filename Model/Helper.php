@@ -169,10 +169,6 @@ class Helper
                     sprintf('Carriyo order skipped because status is not allowed %s :: %s', $order->getIncrementId(), $order->getStatus())
                 );
             }
-
-            $order->addCommentToStatusHistory('Carriyo order export skipped (status not allowed)');
-            $this->orderRepository->save($order);
-
             return null;
         }
 
@@ -222,9 +218,6 @@ class Helper
                     sprintf('Carriyo shipment skipped because status is not allowed %s :: %s', $order->getIncrementId(), $order->getStatus())
                 );
             }
-            $order->addCommentToStatusHistory('Carriyo Shipment Skipped (status not allowed)');
-            $this->orderRepository->save($order);
-
             return null;
         }
 
