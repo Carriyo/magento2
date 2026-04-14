@@ -19,6 +19,7 @@ use Magento\Sales\Model\Order\ShipmentRepository;
 class Helper
 {
     private const SHIPMENT_COMMENT_PREFIX = 'Carriyo ShipmentId# ';
+    private const SHIPMENT_EXPORT_HASH_PREFIX = 'shipment:';
     private const STANDARD_ORDER_STATES = [
         'processing' => Order::STATE_PROCESSING,
         'complete' => Order::STATE_COMPLETE,
@@ -108,7 +109,7 @@ class Helper
 
         return $this->configuration->isOrderAndShipmentFlow()
             ? $this->sendOrderCreateOrUpdate($order, true)
-            : $this->sendShipmentCreateOrUpdate($order);
+            : $this->sendShipmentCreateOrUpdate($order, true);
     }
 
     /**
@@ -120,7 +121,7 @@ class Helper
     public function sendOrderCreateOrUpdate($order, $force = false)
     {
         if ($this->configuration->isShipmentOnlyFlow()) {
-            return $this->sendShipmentCreateOrUpdate($order);
+            return $this->sendShipmentCreateOrUpdate($order, $force);
         }
 
         if (!$this->configuration->isActive()) {
@@ -201,10 +202,11 @@ class Helper
 
     /**
      * @param Order $order
+     * @param bool $force
      * @return string|null
      * @throws LocalizedException
      */
-    public function sendShipmentCreateOrUpdate($order)
+    public function sendShipmentCreateOrUpdate($order, $force = false)
     {
         if (!$this->configuration->isActive()) {
             return null;
@@ -227,17 +229,30 @@ class Helper
         }
 
         $hasExistingShipment = false;
+        $existingShipmentId = null;
         foreach ($order->getAllStatusHistory() as $orderComment) {
             $comment = is_string($orderComment->getComment()) ? $orderComment->getComment() : '';
             if (strpos($comment, 'Carriyo DraftShipmentId#') === 0 || strpos($comment, self::SHIPMENT_COMMENT_PREFIX) === 0) {
                 $hasExistingShipment = true;
-                break;
+                if (preg_match('/^Carriyo (?:Draft)?ShipmentId#\s*(.+)$/', $comment, $matches)) {
+                    $existingShipmentId = trim((string)$matches[1]);
+                }
             }
         }
 
+        $autoBookShipments = $this->configuration->isAutoBookShipments();
+        $payloadHash = $this->carriyoClient->getShipmentPayloadHash($order, $autoBookShipments);
+        if (
+            $hasExistingShipment
+            && !$force
+            && trim((string)$order->getData('carriyo_export_hash')) === self::SHIPMENT_EXPORT_HASH_PREFIX . $payloadHash
+        ) {
+            return $existingShipmentId;
+        }
+
         $response = $hasExistingShipment
-            ? $this->carriyoClient->updateShipment($order, $this->configuration->isAutoBookShipments())
-            : $this->carriyoClient->createShipment($order, $this->configuration->isAutoBookShipments());
+            ? $this->carriyoClient->updateShipment($order, $autoBookShipments)
+            : $this->carriyoClient->createShipment($order, $autoBookShipments);
         if (isset($response['errors'])) {
             $action = $hasExistingShipment ? 'updateShipment' : 'createShipment';
             $this->logger->error(sprintf('Carriyo Error while %s %s %s', $action, $order->getIncrementId(), $response['errors']));
@@ -247,8 +262,9 @@ class Helper
         $shipmentId = (string)($response['shipment_id'] ?? '');
         if (!$hasExistingShipment && $shipmentId !== '') {
             $order->addCommentToStatusHistory(self::SHIPMENT_COMMENT_PREFIX . $shipmentId);
-            $this->orderRepository->save($order);
         }
+        $order->setData('carriyo_export_hash', self::SHIPMENT_EXPORT_HASH_PREFIX . $payloadHash);
+        $this->orderRepository->save($order);
 
         if ($this->configuration->isDebugEnabled()) {
             $this->logger->debug(sprintf('Carriyo shipment response %s::%s', $order->getIncrementId(), print_r($response, true)));

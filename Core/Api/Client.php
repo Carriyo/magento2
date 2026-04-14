@@ -72,7 +72,23 @@ class Client extends AbstractHttp
      */
     public function getOrderPayloadHash(OrderInterface $order, $isLinkedOrder = false)
     {
-        return hash('sha256', json_encode($this->normalizePayload($this->getOrderRequestBody($order, !$isLinkedOrder))));
+        return $this->getPayloadHash($this->getOrderRequestBody($order, !$isLinkedOrder));
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param bool $autoBookShipments
+     * @return string
+     */
+    public function getShipmentPayloadHash(OrderInterface $order, $autoBookShipments)
+    {
+        return $this->getPayloadHash([
+            'auto_book_shipments' => (bool)$autoBookShipments,
+            'body' => $this->getShipmentRequestBody(
+                $order,
+                $this->configuration->getShipmentReference($order->getIncrementId())
+            ),
+        ]);
     }
 
     /**
@@ -400,6 +416,15 @@ class Client extends AbstractHttp
     private function isAssoc(array $value)
     {
         return array_keys($value) !== range(0, count($value) - 1);
+    }
+
+    /**
+     * @param array $payload
+     * @return string
+     */
+    private function getPayloadHash(array $payload)
+    {
+        return hash('sha256', json_encode($this->normalizePayload($payload)));
     }
 
     /**
