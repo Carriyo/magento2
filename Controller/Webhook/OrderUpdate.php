@@ -5,11 +5,12 @@
 namespace Carriyo\Shipment\Controller\Webhook;
 
 use Carriyo\Shipment\Logger\Logger;
+use Carriyo\Shipment\Model\Configuration;
 use Carriyo\Shipment\Model\Helper;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\ResponseInterface;
 
-class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements HttpPostActionInterface
+class OrderUpdate extends \Magento\Framework\App\Action\Action implements HttpPostActionInterface
 {
     /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\Request
@@ -20,13 +21,18 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
      * @var Logger
      */
     private $logger;
+
     /**
      * @var Helper
      */
     private $helper;
 
     /**
-     * ShipmentTaskUpdate constructor.
+     * @var Configuration
+     */
+    private $configuration;
+
+    /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\HTTP\PhpEnvironment\Request $request
      * @param Helper $helper
@@ -36,23 +42,23 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\HTTP\PhpEnvironment\Request $request,
         Helper $helper,
+        Configuration $configuration,
         Logger $logger
     ) {
         parent::__construct($context);
         $this->request = $request;
         $this->logger = $logger;
         $this->helper = $helper;
+        $this->configuration = $configuration;
     }
 
     /**
-     * Dispatch request
-     *
      * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
      * @throws \Magento\Framework\Exception\NotFoundException
      */
     public function execute()
     {
-        $this->logger->info("Carriyo webhook invoked (ShipmentUpdated): " . $this->request->getContent());
+        $this->logger->info("Carriyo webhook invoked (OrderUpdated): " . $this->request->getContent());
 
         if (stripos((string)$this->request->getHeader('Content-Type'), 'application/json') !== 0) {
             $this->returnHttpResponse(400);
@@ -62,15 +68,12 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
         if (empty($payload)) {
             $this->returnHttpResponse(400);
         }
-        if (!isset($payload['references'])) {
-            $this->returnHttpResponse(400, 'MISSING references');
-        }
-        if (!isset($payload['references']['partner_order_reference'])) {
-            $this->returnHttpResponse(400, 'MISSING partner_order_reference');
-        }
 
         try {
-            $this->helper->syncShipment($payload);
+            if ($this->configuration->isShipmentOnlyFlow()) {
+                $this->returnHttpResponse(200, 'IGNORED');
+            }
+            $this->helper->syncOrderStatus($payload);
             $this->returnHttpResponse(200, 'SYNCED');
         } catch (\Exception $e) {
             $this->returnHttpResponse(400, $e->getMessage());
@@ -78,9 +81,8 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
     }
 
     /**
-     * Flush output and set http code
-     *
      * @param int $responseCode
+     * @param string|null $body
      * @return void
      */
     protected function returnHttpResponse($responseCode, $body = null)

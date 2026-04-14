@@ -4,15 +4,20 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-
     <event name="sales_order_address_save_after">
         <observer name="carriyo_address_save" instance="Carriyo\Shipment\Observer\SalesOrderAddressSaveAfter" />
     </event>
     <event name="order_cancel_after">
         <observer name="carriyo_order_cancel" instance="Carriyo\Shipment\Observer\SalesOrderCancelAfter" />
     </event>
+    <event name="sales_order_place_after">
+        <observer name="carriyo_order_place" instance="Carriyo\Shipment\Observer\SalesOrderPlaceAfter" />
+    </event>
     <event name="sales_order_save_after">
         <observer name="carriyo_order_save" instance="Carriyo\Shipment\Observer\SalesOrderSaveAfter" />
+    </event>
+    <event name="sales_order_save_commit_after">
+        <observer name="carriyo_order_save_commit" instance="Carriyo\Shipment\Observer\SalesOrderSaveAfter" />
     </event>
 
 </config>

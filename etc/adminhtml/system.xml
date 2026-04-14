@@ -14,106 +14,127 @@
             <label>Settings</label>
             <tab>carriyo</tab>
             <resource>Carriyo_Shipment::config_carriyo_shipment</resource>
-            <group id="general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
-                <label>General</label>
+            <group id="common_settings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
+                <label>Common Settings</label>
                 <field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enable Carriyo Module</label>
+                    <config_path>carriyo/general/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="debug" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enable Debug Logging</label>
                     <comment>If enabled, Carriyo requests will log headers (including OAuth token) and payloads to carriyo.log. Disable in production.</comment>
+                    <config_path>carriyo/general/debug</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <attribute type="expanded">1</attribute>
-            </group>
-            <group id="api_credentials" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
-                   translate="label">
-                <label>API Credentials</label>
-                <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label"
+                <field id="sync_flow" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sync Flow</label>
+                    <comment>Allowed values: `shipment_only` or `order_and_shipment`.</comment>
+                    <config_path>carriyo/general/sync_flow</config_path>
+                    <source_model>Carriyo\Shipment\Model\System\Config\Source\SyncFlow</source_model>
+                </field>
+                <field id="api_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30" translate="label"
                        type="text">
                     <label>API Domain</label>
                     <comment>eg: https://api.carriyo.com</comment>
+                    <config_path>carriyo/api_credentials/api_url</config_path>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                <field id="tenant_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="40"
                        translate="label" type="text">
                     <label>Tenant ID</label>
                     <comment>* Provide the Tenant ID (case sensitive)</comment>
+                    <config_path>carriyo/api_credentials/tenant_id</config_path>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                <field id="merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="50"
                        translate="label" type="text">
                     <label>Merchant ID</label>
                     <comment>* Provide the Merchant ID (case sensitive)</comment>
+                    <config_path>carriyo/api_credentials/merchant</config_path>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="obscure">
+                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="60" translate="label" type="obscure">
                     <label>API Key</label>
-                    <comment/>
+                    <config_path>carriyo/api_credentials/api_key</config_path>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                <field id="client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70"
                        translate="label" type="text">
                     <label>Client ID</label>
-                    <comment/>
+                    <config_path>carriyo/api_credentials/client_id</config_path>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
-                <field id="client_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                <field id="client_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80"
                        translate="label" type="obscure">
                     <label>Client Secret</label>
-                    <comment/>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <config_path>carriyo/api_credentials/client_secret</config_path>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
+                <attribute type="expanded">1</attribute>
             </group>
-            <group id="pickup_address" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
+            <group id="order_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                    translate="label">
-                <label>Pickup Address</label>
-                <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
+                <label>Order Mapping</label>
+                <field id="allowed_statuses_cod" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
+                       translate="label" type="textarea">
+                    <label>Allowed Order Statuses (COD)</label>
+                    <comment>List of Magento statuses allowed for COD sync. Example: `pending,processing`.</comment>
+                    <config_path>carriyo/carriyo_mappings/allowed_statuses_cod</config_path>
+                </field>
+                <field id="allowed_statuses_other" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
+                       translate="label" type="textarea">
+                    <label>Allowed Order Statuses (Other Payment Types)</label>
+                    <comment>List of Magento statuses allowed for non-COD sync. Example: `processing`.</comment>
+                    <config_path>carriyo/carriyo_mappings/allowed_statuses_other</config_path>
+                </field>
+                <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                       translate="label" type="textarea">
+                    <label>Order Status Mapping</label>
+                    <comment>Map Carriyo statuses to Magento status. Example: `open=processing,closed=complete,cancelled=canceled`.</comment>
+                    <config_path>carriyo/carriyo_mappings/order_status_map</config_path>
+                </field>
+                <field id="order_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="40"
+                       translate="label" type="text">
+                    <label>Order Reference Prefix</label>
+                    <comment>Optional prefix for Carriyo order reference. Example: `MGT-`.</comment>
+                    <config_path>carriyo/order_mappings/order_reference_prefix</config_path>
+                    <validate>validate-no-html-tags</validate>
+                </field>
+            </group>
+            <group id="shipment_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
+                   translate="label">
+                <label>Shipment Mappings</label>
+                <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                        translate="label" type="text">
                     <label>Location Code</label>
-                    <comment>Provide the Carriyo location code for the default pickup location you want to use for shipments</comment>
-                    <validate>required-entry validate-no-html-tags</validate>
+                    <comment>Default Carriyo pickup location code for shipment flow.</comment>
+                    <config_path>carriyo/pickup_address/location_code</config_path>
+                    <validate>validate-no-html-tags</validate>
                 </field>
-            </group>
-            <group id="carriyo_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
-                   translate="label">
-                <label>Carriyo Mappings</label>
-                <field id="auto_book_shipments" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1"
+                <field id="auto_book_shipments" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Auto Book Shipments</label>
-                    <comment>Enable this option if you wish to automatically book (confirm) shipments.</comment>
+                    <comment>Enable this option to automatically confirm shipments in shipment flow.</comment>
+                    <config_path>carriyo/carriyo_mappings/auto_book_shipments</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Shipping Method Mapping</label>
-                    <comment>Map your Magento shipping methods to Carriyo delivery methods. Use the Shipping Method value from your Magento order. Eg: `Flat Rate=STANDARD,Free Shipping=EXPRESS`</comment>
+                    <comment>Map Magento shipping method codes to Carriyo delivery types. Example: `flatrate_flatrate=STANDARD,freeshipping_freeshipping=EXPRESS`.</comment>
+                    <config_path>carriyo/carriyo_mappings/shipping_methods_map</config_path>
                 </field>
-                <field id="allowed_statuses_cod" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
-                       translate="label" type="textarea">
-                    <label>Allowed Order Statuses (COD)</label>
-                    <comment>List of Magento statuses that are allowed to update Carriyo for COD orders. Eg: `pending,processing`</comment>
-                </field>
-                <field id="allowed_statuses_other" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
-                       translate="label" type="textarea">
-                    <label>Allowed Order Statuses (Other Payment Types)</label>
-                    <comment>List of Magento statuses that are allowed to update Carriyo for non COD orders. Eg: `processing`</comment>
-                </field>
-                <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
-                       translate="label" type="textarea">
-                    <label>Order Status Mapping</label>
-                    <comment>Map Carriyo statuses to update Magento order status. Eg: `shipped=complete,cancelled=canceled`</comment>
-                </field>
-                <field id="shipment_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
+                <field id="shipment_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="40"
                        translate="label" type="text">
                     <label>Shipment Reference Prefix</label>
-                    <comment>Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.</comment>
+                    <comment>Optional prefix for Carriyo shipment reference in shipment flow.</comment>
+                    <config_path>carriyo/carriyo_mappings/shipment_reference_prefix</config_path>
                     <validate>validate-no-html-tags</validate>
                 </field>
             </group>

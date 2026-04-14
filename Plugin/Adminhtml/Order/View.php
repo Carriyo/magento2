@@ -45,12 +45,22 @@ class View
 
     public function beforeSetLayout(\Magento\Sales\Block\Adminhtml\Order\View $view)
     {
-        if (!$this->configuration->isActive()) return null;
+        if (!$this->configuration->isActive()) {
+            return null;
+        }
+
+        $label = $this->configuration->isOrderAndShipmentFlow()
+            ? (
+                trim((string)$view->getOrder()->getData('carriyo_order_id')) !== ''
+                    ? __('Update Carriyo Order')
+                    : __('Send Order to Carriyo')
+            )
+            : __('Send Shipment to Carriyo');
 
         $view->addButton(
             'send-to-carriyo',
             [
-                'label' => __('Send Shipment to Carriyo'),
+                'label' => $label,
                 'class' => 'save',
                 'onclick' => 'setLocation(\'' . $this->getSendToCarriyoUrl($view) . '\')'
             ]

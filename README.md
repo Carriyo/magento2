@@ -26,7 +26,7 @@ This module integrates your ecommerce with Carriyo platform.
 ### Type 2: Composer
 
  - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require carriyo/module-shipment:"^1.3.1"`. Replace version number if you want to use a previous version of the Carriyo module.
+ - Install the module composer by running `composer require carriyo/module-shipment:"^2.0.0"`.
  - enable the module by running `php bin/magento module:enable Carriyo_Shipment`
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
@@ -36,21 +36,15 @@ This module integrates your ecommerce with Carriyo platform.
 The following settings can be found in
 `Stores -> Configuration -> Carriyo -> Settings`
 
-- API Credentials
-  - API Domain - (required)
-  - Tenant ID - (required)
-  - Merchant ID - (required)
-  - API Key - (required)
-  - Client ID - (required)
-  - Client Secret - (required)
-- Pickup Address
-  - Location Code - (required)
-- Carriyo Mappings
-  - Shipping Methods - (required) A map between your sipping methods labels and Carriyo shipping type. Eg: `Flat Rate=STANDARD,Free Shipping=EXPRESS`
-  - Allowed Order Statuses (COD): List of Magento statuses that are allowed to update Carriyo for COD orders. Eg: `pending,processing`
-  - Allowed Order Statuses (Other Payment Types): List of Magento statuses that are allowed to update Carriyo for non COD orders. Eg: `processing`
-  - Order Status Mapping: Map Carriyo statuses to update the Magento order status. Eg: `shipped=complete,cancelled=canceled`
-  - Shipment Reference Prefix: Add an optional prefix to the Carriyo shipment reference. Use this when your Magento order numbers are not unique across merchants.
+- Common Settings
+  - Sync Flow: `Shipment Only` or `Order and Shipment`
+  - API Domain, Tenant ID, Merchant ID, API Key, Client ID, Client Secret
+- Order Mappings
+  - Allowed statuses and order status mapping
+  - Optional order reference prefix
+- Shipment Mappings
+  - Location code, auto-book toggle, shipping method mapping
+  - Optional shipment reference prefix
 
 ### Running in local environment
 In order to run this environment please make sure you have `docker` and `docker-compose` installed.
