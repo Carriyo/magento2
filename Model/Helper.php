@@ -349,20 +349,24 @@ class Helper
         if ($magentoShipmentId) {
             $shipment = $this->shipmentRepository->get($magentoShipmentId);
             $trackingNo = (string)($payload['post_shipping_info']['tracking_no'] ?? '');
+            $trackingUrl = (string)($payload['post_shipping_info']['carriyo_tracking_url'] ?? '');
             if ($trackingNo !== '') {
-                $hasTrack = false;
+                $matchingTrack = null;
                 foreach ($shipment->getTracksCollection() as $track) {
                     if ((string)$track->getTrackNumber() === $trackingNo || (string)$track->getNumber() === $trackingNo) {
-                        $hasTrack = true;
+                        $matchingTrack = $track;
                         break;
                     }
                 }
-                if (!$hasTrack) {
+                if (!$matchingTrack) {
                     $shipment->addTrack($this->trackFactory->create()->addData([
                         'carrier_code' => 'custom',
                         'title' => $payload['carrier_account']['carrier'] ?? 'Carriyo',
                         'number' => $trackingNo,
+                        'description' => $trackingUrl,
                     ]));
+                } elseif ($trackingUrl !== '' && (string)$matchingTrack->getDescription() !== $trackingUrl) {
+                    $matchingTrack->setDescription($trackingUrl);
                 }
             }
 
@@ -397,11 +401,13 @@ class Helper
         }
 
         $trackingNo = (string)($payload['post_shipping_info']['tracking_no'] ?? '');
+        $trackingUrl = (string)($payload['post_shipping_info']['carriyo_tracking_url'] ?? '');
         if ($trackingNo !== '') {
             $shipment->addTrack($this->trackFactory->create()->addData([
                 'carrier_code' => 'custom',
                 'title' => $payload['carrier_account']['carrier'] ?? 'Carriyo',
                 'number' => $trackingNo,
+                'description' => $trackingUrl,
             ]));
         }
 
