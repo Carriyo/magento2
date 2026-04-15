@@ -28,7 +28,8 @@ class Configuration
     public const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
     public const CONFIG_PATH_ALLOWED_STATUSES_OTHER = 'carriyo/carriyo_mappings/allowed_statuses_other';
     public const CONFIG_PATH_ALLOWED_STATUSES_COD = 'carriyo/carriyo_mappings/allowed_statuses_cod';
-    public const CONFIG_PATH_ORDER_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
+    public const CONFIG_PATH_SHIPMENT_STATUS_MAP = 'carriyo/carriyo_mappings/order_status_map';
+    public const CONFIG_PATH_ORDER_STATUS_MAP = 'carriyo/order_mappings/order_status_map';
     public const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
     public const CONFIG_PATH_ORDER_PREFIX = 'carriyo/order_mappings/order_reference_prefix';
 
@@ -192,31 +193,15 @@ class Configuration
      */
     public function getMagentoOrderStatus($carriyoStatus)
     {
-        foreach ($this->getCsvValues(self::CONFIG_PATH_ORDER_STATUS_MAP) as $mapping) {
-            [$status, $magentoStatus] = array_pad(array_map('trim', explode('=', $mapping, 2)), 2, null);
-            if ($status === $carriyoStatus && $magentoStatus !== null && $magentoStatus !== '') {
-                return $magentoStatus;
-            }
-        }
-
-        return null;
+        return $this->getStatusMap(self::CONFIG_PATH_ORDER_STATUS_MAP)[$carriyoStatus] ?? null;
     }
 
     /**
      * @return array
      */
-    public function getCarriyoMappedStatuses()
+    public function getShipmentMappedStatuses()
     {
-        $map = [];
-        foreach ($this->getCsvValues(self::CONFIG_PATH_ORDER_STATUS_MAP) as $mapping) {
-            [$status, $magentoStatus] = array_pad(array_map('trim', explode('=', $mapping, 2)), 2, null);
-            if ($status === null || $status === '' || $magentoStatus === null || $magentoStatus === '') {
-                continue;
-            }
-            $map[$status] = $magentoStatus;
-        }
-
-        return $map;
+        return $this->getStatusMap(self::CONFIG_PATH_SHIPMENT_STATUS_MAP);
     }
 
     /**
@@ -306,5 +291,23 @@ class Configuration
         return array_values(array_filter($values, static function ($value) {
             return $value !== '';
         }));
+    }
+
+    /**
+     * @param string $configPath
+     * @return array
+     */
+    private function getStatusMap($configPath)
+    {
+        $map = [];
+        foreach ($this->getCsvValues($configPath) as $mapping) {
+            [$status, $magentoStatus] = array_pad(array_map('trim', explode('=', $mapping, 2)), 2, null);
+            if ($status === null || $status === '' || $magentoStatus === null || $magentoStatus === '') {
+                continue;
+            }
+            $map[$status] = $magentoStatus;
+        }
+
+        return $map;
     }
 }

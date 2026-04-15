@@ -477,7 +477,7 @@ class Helper
             throw new LocalizedException(__("{$orderReference} ORDER NOT FOUND"));
         }
 
-        $statusMap = $this->configuration->getCarriyoMappedStatuses();
+        $statusMap = $this->configuration->getShipmentMappedStatuses();
         if (!isset($statusMap[$carriyoStatus])) {
             $this->logger->error("Carriyo Status Not Mapped To Magento Status");
             throw new LocalizedException(__("INVALID STATUS {$carriyoStatus}"));

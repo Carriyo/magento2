@@ -24,13 +24,14 @@
 			</pickup_address>
 			<order_mappings>
 				<order_reference_prefix/>
+				<order_status_map>open=processing,closed=complete,cancelled=canceled</order_status_map>
 			</order_mappings>
 			<carriyo_mappings>
 				<auto_book_shipments/>
 				<shipping_methods_map/>
 				<allowed_statuses_other>processing</allowed_statuses_other>
 				<allowed_statuses_cod>pending,processing</allowed_statuses_cod>
-				<order_status_map>booked=processing,shipped=processing,delivered=complete,open=processing,closed=complete,cancelled=canceled</order_status_map>
+				<order_status_map>booked=processing,shipped=processing,delivered=complete,cancelled=canceled</order_status_map>
 				<shipment_reference_prefix/>
 			</carriyo_mappings>
 		</carriyo>
