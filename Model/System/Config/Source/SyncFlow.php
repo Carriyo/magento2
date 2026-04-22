@@ -19,11 +19,11 @@ class SyncFlow implements ArrayInterface
         $options = [];
         $options[] = [
             'value' => Configuration::SYNC_FLOW_SHIPMENT_ONLY,
-            'label' => __('Shipment Only'),
+            'label' => __('Shipments'),
         ];
         $options[] = [
             'value' => Configuration::SYNC_FLOW_ORDER_AND_SHIPMENT,
-            'label' => __('Order and Shipment'),
+            'label' => __('Orders'),
         ];
 
         return $options;

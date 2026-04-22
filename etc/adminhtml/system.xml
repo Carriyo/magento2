@@ -15,7 +15,7 @@
             <tab>carriyo</tab>
             <resource>Carriyo_Shipment::config_carriyo_shipment</resource>
             <group id="common_settings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
-                <label>Common Settings</label>
+                <label>General Settings</label>
                 <field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enable Carriyo Module</label>
@@ -31,8 +31,8 @@
                 </field>
                 <field id="sync_flow" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
                        showInStore="1">
-                    <label>Sync Flow</label>
-                    <comment>Allowed values: `shipment_only` or `order_and_shipment`.</comment>
+                    <label>Integration mode</label>
+                    <comment>Select whether Carriyo integrates through orders or shipments.</comment>
                     <config_path>carriyo/general/sync_flow</config_path>
                     <source_model>Carriyo\Shipment\Model\System\Config\Source\SyncFlow</source_model>
                 </field>
@@ -76,27 +76,40 @@
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <validate>required-entry validate-no-html-tags</validate>
                 </field>
+                <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90"
+                       translate="label" type="text">
+                    <label>Default Location Code</label>
+                    <comment>Default Carriyo pickup location code for shipment flow.</comment>
+                    <config_path>carriyo/pickup_address/location_code</config_path>
+                    <validate>validate-no-html-tags</validate>
+                </field>
+                <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100"
+                       translate="label" type="textarea">
+                    <label>Shipping Method Mapping</label>
+                    <comment>Map Magento shipping method codes to Carriyo delivery types. Example: `flatrate_flatrate=STANDARD,freeshipping_freeshipping=EXPRESS`.</comment>
+                    <config_path>carriyo/carriyo_mappings/shipping_methods_map</config_path>
+                </field>
                 <attribute type="expanded">1</attribute>
             </group>
             <group id="sync_triggers" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                    translate="label">
-                <label>Sync Triggers</label>
+                <label>Triggers</label>
                 <field id="allowed_statuses_cod" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
                        translate="label" type="textarea">
-                    <label>Allowed Order Statuses (COD)</label>
-                    <comment>List of Magento statuses allowed to trigger outbound sync for COD orders. Example: `pending,processing`.</comment>
+                    <label>Order Trigger for COD</label>
+                    <comment>List of Magento statuses to trigger outbound sync for COD orders. Example: `pending,processing`.</comment>
                     <config_path>carriyo/carriyo_mappings/allowed_statuses_cod</config_path>
                 </field>
                 <field id="allowed_statuses_other" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                        translate="label" type="textarea">
-                    <label>Allowed Order Statuses (Other Payment Types)</label>
-                    <comment>List of Magento statuses allowed to trigger outbound sync for non-COD orders. Example: `processing`.</comment>
+                    <label>Order Trigger for other payment types</label>
+                    <comment>List of Magento statuses to trigger outbound sync for non-COD orders. Example: `processing`.</comment>
                     <config_path>carriyo/carriyo_mappings/allowed_statuses_other</config_path>
                 </field>
             </group>
             <group id="order_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                    translate="label">
-                <label>Order Mapping</label>
+                <label>Order Integration Mode</label>
                 <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Order Status Mapping</label>
@@ -113,14 +126,7 @@
             </group>
             <group id="shipment_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">
-                <label>Shipment Mapping</label>
-                <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10"
-                       translate="label" type="text">
-                    <label>Location Code</label>
-                    <comment>Default Carriyo pickup location code for shipment flow.</comment>
-                    <config_path>carriyo/pickup_address/location_code</config_path>
-                    <validate>validate-no-html-tags</validate>
-                </field>
+                <label>Shipment Integration Mode</label>
                 <field id="shipment_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                        translate="label" type="textarea">
                     <label>Shipment Status Mapping</label>
@@ -133,12 +139,6 @@
                     <comment>Enable this option to automatically confirm shipments in shipment flow.</comment>
                     <config_path>carriyo/carriyo_mappings/auto_book_shipments</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="shipping_methods_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="40"
-                       translate="label" type="textarea">
-                    <label>Shipping Method Mapping</label>
-                    <comment>Map Magento shipping method codes to Carriyo delivery types. Example: `flatrate_flatrate=STANDARD,freeshipping_freeshipping=EXPRESS`.</comment>
-                    <config_path>carriyo/carriyo_mappings/shipping_methods_map</config_path>
                 </field>
                 <field id="shipment_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="50"
                        translate="label" type="text">
