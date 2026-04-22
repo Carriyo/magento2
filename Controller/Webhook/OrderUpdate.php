@@ -70,7 +70,7 @@ class OrderUpdate extends \Magento\Framework\App\Action\Action implements HttpPo
         }
 
         try {
-            if ($this->configuration->isShipmentOnlyFlow()) {
+            if ($this->configuration->isShipmentMode()) {
                 $this->returnHttpResponse(200, 'IGNORED');
             }
             $this->helper->syncOrderStatus($payload);

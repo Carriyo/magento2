@@ -49,7 +49,7 @@ class View
             return null;
         }
 
-        $label = $this->configuration->isOrderAndShipmentFlow()
+        $label = $this->configuration->isOrderMode()
             ? (
                 trim((string)$view->getOrder()->getData('carriyo_order_id')) !== ''
                     ? __('Update Carriyo Order')

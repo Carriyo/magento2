@@ -58,7 +58,7 @@ class Send extends \Magento\Backend\App\Action
         try {
             if (!empty($orderId)) {
                 $syncReference = $this->helper->sendOrder($orderId);
-                $message = $this->configuration->isOrderAndShipmentFlow()
+                $message = $this->configuration->isOrderMode()
                     ? (
                         $syncReference
                             ? __('Successfully synced order to Carriyo. Order ID: %1', $syncReference)

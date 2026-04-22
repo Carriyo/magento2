@@ -9,7 +9,7 @@
 	<default>
 		<carriyo>
 			<general>
-				<sync_flow>shipment_only</sync_flow>
+				<integration_mode>shipment_only</integration_mode>
 			</general>
 			<api_credentials>
 				<api_url>https://api.carriyo.com</api_url>

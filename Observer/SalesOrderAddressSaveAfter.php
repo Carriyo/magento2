@@ -38,7 +38,7 @@ class SalesOrderAddressSaveAfter implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($this->configuration->isOrderAndShipmentFlow()) {
+        if ($this->configuration->isOrderMode()) {
             return $this;
         }
 

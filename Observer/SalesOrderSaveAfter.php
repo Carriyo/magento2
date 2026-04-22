@@ -44,7 +44,7 @@ class SalesOrderSaveAfter implements ObserverInterface
             return $this;
         }
 
-        if ($this->configuration->isShipmentOnlyFlow()) {
+        if ($this->configuration->isShipmentMode()) {
             if (!$order->getOrigData('status') || $order->getStatus() === $order->getOrigData('status')) {
                 return $this;
             }

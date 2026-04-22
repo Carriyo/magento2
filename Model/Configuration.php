@@ -12,11 +12,11 @@ use Magento\Framework\Encryption\EncryptorInterface;
 class Configuration
 {
     public const MODULE_NAME = 'Carriyo_Shipment';
-    public const SYNC_FLOW_SHIPMENT_ONLY = 'shipment_only';
-    public const SYNC_FLOW_ORDER_AND_SHIPMENT = 'order_and_shipment';
+    public const INTEGRATION_MODE_SHIPMENTS = 'shipment_only';
+    public const INTEGRATION_MODE_ORDERS = 'order_and_shipment';
     public const CONFIG_PATH_ACTIVE = 'carriyo/general/active';
     public const CONFIG_PATH_DEBUG = 'carriyo/general/debug';
-    public const CONFIG_PATH_SYNC_FLOW = 'carriyo/general/sync_flow';
+    public const CONFIG_PATH_INTEGRATION_MODE = 'carriyo/general/integration_mode';
     public const CONFIG_PATH_API_URL = 'carriyo/api_credentials/api_url';
     public const CONFIG_PATH_API_KEY = 'carriyo/api_credentials/api_key';
     public const CONFIG_PATH_TENANT_ID = 'carriyo/api_credentials/tenant_id';
@@ -130,29 +130,29 @@ class Configuration
     /**
      * @return string
      */
-    public function getSyncFlow()
+    public function getIntegrationMode()
     {
-        $flow = (string)$this->configReader->getValue(self::CONFIG_PATH_SYNC_FLOW);
+        $mode = (string)$this->configReader->getValue(self::CONFIG_PATH_INTEGRATION_MODE);
 
-        return in_array($flow, [self::SYNC_FLOW_SHIPMENT_ONLY, self::SYNC_FLOW_ORDER_AND_SHIPMENT], true)
-            ? $flow
-            : self::SYNC_FLOW_SHIPMENT_ONLY;
+        return in_array($mode, [self::INTEGRATION_MODE_SHIPMENTS, self::INTEGRATION_MODE_ORDERS], true)
+            ? $mode
+            : self::INTEGRATION_MODE_SHIPMENTS;
     }
 
     /**
      * @return bool
      */
-    public function isOrderAndShipmentFlow()
+    public function isOrderMode()
     {
-        return $this->getSyncFlow() === self::SYNC_FLOW_ORDER_AND_SHIPMENT;
+        return $this->getIntegrationMode() === self::INTEGRATION_MODE_ORDERS;
     }
 
     /**
      * @return bool
      */
-    public function isShipmentOnlyFlow()
+    public function isShipmentMode()
     {
-        return !$this->isOrderAndShipmentFlow();
+        return !$this->isOrderMode();
     }
 
     /**

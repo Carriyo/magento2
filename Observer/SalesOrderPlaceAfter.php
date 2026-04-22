@@ -38,7 +38,7 @@ class SalesOrderPlaceAfter implements ObserverInterface
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($this->configuration->isShipmentOnlyFlow()) {
+        if ($this->configuration->isShipmentMode()) {
             return $this;
         }
 

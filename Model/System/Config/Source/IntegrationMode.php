@@ -9,7 +9,7 @@ namespace Carriyo\Shipment\Model\System\Config\Source;
 use Carriyo\Shipment\Model\Configuration;
 use Magento\Framework\Option\ArrayInterface;
 
-class SyncFlow implements ArrayInterface
+class IntegrationMode implements ArrayInterface
 {
     /**
      * @return array
@@ -18,11 +18,11 @@ class SyncFlow implements ArrayInterface
     {
         $options = [];
         $options[] = [
-            'value' => Configuration::SYNC_FLOW_SHIPMENT_ONLY,
+            'value' => Configuration::INTEGRATION_MODE_SHIPMENTS,
             'label' => __('Shipments'),
         ];
         $options[] = [
-            'value' => Configuration::SYNC_FLOW_ORDER_AND_SHIPMENT,
+            'value' => Configuration::INTEGRATION_MODE_ORDERS,
             'label' => __('Orders'),
         ];
 

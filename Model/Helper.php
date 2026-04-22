@@ -107,7 +107,7 @@ class Helper
             throw new LocalizedException(__('Order not found.'));
         }
 
-        return $this->configuration->isOrderAndShipmentFlow()
+        return $this->configuration->isOrderMode()
             ? $this->sendOrderCreateOrUpdate($order, true)
             : $this->sendShipmentCreateOrUpdate($order, true);
     }
@@ -120,7 +120,7 @@ class Helper
      */
     public function sendOrderCreateOrUpdate($order, $force = false)
     {
-        if ($this->configuration->isShipmentOnlyFlow()) {
+        if ($this->configuration->isShipmentMode()) {
             return $this->sendShipmentCreateOrUpdate($order, $force);
         }
 
@@ -276,7 +276,7 @@ class Helper
             return;
         }
 
-        if ($this->configuration->isShipmentOnlyFlow()) {
+        if ($this->configuration->isShipmentMode()) {
             $response = $this->carriyoClient->cancelShipment($orderId);
             if (isset($response['errors'])) {
                 $this->logger->error("Carriyo Error while cancelShipment {$orderId} " . $response['errors']);
@@ -307,7 +307,7 @@ class Helper
      */
     public function syncShipment(array $payload)
     {
-        if ($this->configuration->isShipmentOnlyFlow()) {
+        if ($this->configuration->isShipmentMode()) {
             if (!isset($payload['references']['partner_order_reference'])) {
                 throw new LocalizedException(__('MISSING partner_order_reference'));
             }
@@ -436,7 +436,7 @@ class Helper
      */
     public function syncOrderStatus(array $payload)
     {
-        if ($this->configuration->isShipmentOnlyFlow()) {
+        if ($this->configuration->isShipmentMode()) {
             return;
         }
 
