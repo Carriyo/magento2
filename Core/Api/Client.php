@@ -298,8 +298,9 @@ class Client extends AbstractHttp
         }
 
         if ($fulfillmentOrderItems) {
-            $body['fulfillment_orders'] = [[
+            $body['fulfillment_orders'] = [array_filter([
                 'partner_fulfillment_order_reference' => $this->configuration->getFulfillmentOrderReference($order->getIncrementId()),
+                'location_id' => $this->configuration->getLocationCode(),
                 'delivery' => array_filter([
                     'shipping_required' => true,
                     'delivery_type' => $deliveryType,
@@ -307,7 +308,9 @@ class Client extends AbstractHttp
                     return $value !== null && $value !== '';
                 }),
                 'line_items' => $fulfillmentOrderItems,
-            ]];
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            })];
         }
 
         return $body;
