@@ -12,8 +12,8 @@ use Magento\Framework\Encryption\EncryptorInterface;
 class Configuration
 {
     public const MODULE_NAME = 'Carriyo_Shipment';
-    public const INTEGRATION_MODE_SHIPMENTS = 'shipment_only';
-    public const INTEGRATION_MODE_ORDERS = 'order_and_shipment';
+    public const INTEGRATION_MODE_SHIPMENTS = 'shipments';
+    public const INTEGRATION_MODE_ORDERS = 'orders';
     public const CONFIG_PATH_ACTIVE = 'carriyo/general/active';
     public const CONFIG_PATH_DEBUG = 'carriyo/general/debug';
     public const CONFIG_PATH_INTEGRATION_MODE = 'carriyo/general/integration_mode';
