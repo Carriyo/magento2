@@ -23,6 +23,7 @@ class Configuration
     public const CONFIG_PATH_CLIENT_ID = 'carriyo/api_credentials/client_id';
     public const CONFIG_PATH_CLIENT_SECRET = 'carriyo/api_credentials/client_secret';
     public const CONFIG_PATH_MERCHANT = 'carriyo/api_credentials/merchant';
+    public const CONFIG_PATH_WEIGHT_UNIT = 'general/locale/weight_unit';
     public const CONFIG_PATH_LOCATION_CODE = 'carriyo/pickup_address/location_code';
     public const CONFIG_PATH_AUTO_BOOK_SHIPMENTS = 'carriyo/carriyo_mappings/auto_book_shipments';
     public const CONFIG_PATH_SHIPPING_METHODS = 'carriyo/carriyo_mappings/shipping_methods_map';
@@ -101,6 +102,14 @@ class Configuration
     public function getMerchant()
     {
         return (string)$this->configReader->getValue(self::CONFIG_PATH_MERCHANT);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWeightUnit()
+    {
+        return ['kgs' => 'kg', 'lbs' => 'lb'][(string)$this->configReader->getValue(self::CONFIG_PATH_WEIGHT_UNIT)] ?? null;
     }
 
     /**
