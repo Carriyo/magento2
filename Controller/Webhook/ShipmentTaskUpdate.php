@@ -70,8 +70,7 @@ class ShipmentTaskUpdate extends \Magento\Framework\App\Action\Action implements
         }
 
         try {
-            $this->helper->syncShipment($payload);
-            $this->returnHttpResponse(200, 'SYNCED');
+            $this->returnHttpResponse(200, $this->helper->syncShipment($payload) ? 'SYNCED' : 'IGNORED');
         } catch (\Exception $e) {
             $this->returnHttpResponse(400, $e->getMessage());
         }

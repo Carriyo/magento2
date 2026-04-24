@@ -303,6 +303,7 @@ class Helper
 
     /**
      * @param array $payload
+     * @return bool
      * @throws LocalizedException
      */
     public function syncShipment(array $payload)
@@ -315,19 +316,17 @@ class Helper
                 throw new LocalizedException(__('MISSING status'));
             }
 
-            $this->updateOrder(
+            return $this->updateOrder(
                 (string)$payload['references']['partner_order_reference'],
                 (string)$payload['post_shipping_info']['status']
             );
-
-            return;
         }
 
         $order = $this->orderFactory->create()->loadByIncrementId(
             $this->configuration->getMagentoOrderReference($payload['references']['partner_order_reference'])
         );
         if (!$order->getId()) {
-            throw new LocalizedException(__('Order not found.'));
+            return false;
         }
 
         $shipmentId = (string)($payload['shipment_id'] ?? '');
@@ -375,7 +374,7 @@ class Helper
                 $shipment->addComment(__('Carriyo Status Update: %1.', $status));
             }
             $this->shipmentRepository->save($shipment);
-            return;
+            return true;
         }
 
         if (empty($payload['items'])) {
@@ -428,6 +427,8 @@ class Helper
             sprintf('%s%s MagentoShipmentId# %s', self::SHIPMENT_COMMENT_PREFIX, $shipmentId, $shipment->getEntityId())
         );
         $this->orderRepository->save($order);
+
+        return true;
     }
 
     /**
@@ -479,8 +480,7 @@ class Helper
 
         $order = $this->orderFactory->create()->loadByIncrementId($this->configuration->getMagentoOrderReference($orderReference));
         if (!$order->getId()) {
-            $this->logger->error("{$orderReference} ORDER NOT FOUND");
-            throw new LocalizedException(__("{$orderReference} ORDER NOT FOUND"));
+            return false;
         }
 
         $statusMap = $this->configuration->getShipmentMappedStatuses();
