@@ -116,7 +116,7 @@
                 <field id="order_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                        translate="label" type="textarea">
                     <label>Order Status Mapping</label>
-                    <comment>Map Carriyo statuses to Magento status. Example: `open=processing,closed=complete,cancelled=canceled`.</comment>
+                    <comment>Map Carriyo statuses to Magento status. Example: `open=processing,partially_allocated=processing,allocated=processing,fulfilled=processing,closed=complete,cancelled=canceled`.</comment>
                     <config_path>carriyo/order_mappings/order_status_map</config_path>
                 </field>
                 <field id="order_reference_prefix" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="40"
