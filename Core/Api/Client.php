@@ -191,7 +191,7 @@ class Client extends AbstractHttp
         $paymentMethod = $payment ? $payment->getMethod() : null;
         $shippingAddress = $order->getShippingAddress() ?: $order->getBillingAddress();
         $billingAddress = $order->getBillingAddress();
-        $deliveryType = $this->configuration->getDeliveryType((string)$order->getShippingMethod());
+        $weightUnit = $this->configuration->getWeightUnit();
         $body = [
             'sales_channel' => 'magento',
             'payment' => [
@@ -204,9 +204,13 @@ class Client extends AbstractHttp
         if ($includePartnerOrderReference) {
             $body['partner_order_reference'] = $this->configuration->getOrderReference($order->getIncrementId());
         }
+        $body['delivery_type'] = $this->configuration->getDeliveryType((string)$order->getShippingMethod());
+        if ($body['delivery_type'] === null || $body['delivery_type'] === '') {
+            unset($body['delivery_type']);
+        }
 
         if ($shippingAddress) {
-            $body['shipping_address'] = array_filter([
+            $body['delivery_address'] = array_filter([
                 'contact_name' => trim(implode(' ', array_filter([$shippingAddress->getFirstname(), $shippingAddress->getLastname()]))),
                 'contact_phone' => $shippingAddress->getTelephone(),
                 'contact_email' => $shippingAddress->getEmail(),
@@ -279,16 +283,22 @@ class Client extends AbstractHttp
                 continue;
             }
             $quantity = (int)$item->getQtyOrdered();
-            $body['line_items'][] = [
+            $body['line_items'][] = array_filter([
                 'id' => (string)$item->getItemId(),
                 'sku' => (string)$item->getSku(),
                 'description' => (string)$item->getName(),
-                'requires_shipping' => !$item->getIsVirtual(),
+                'digital' => (bool)$item->getIsVirtual(),
                 'quantity' => $quantity,
                 'unit_price' => (float)$item->getPriceInclTax(),
                 'product_ref' => (string)$item->getItemId(),
+                'weight' => (float)$item->getWeight() > 0 && $weightUnit !== null ? [
+                    'value' => (float)$item->getWeight(),
+                    'unit' => $weightUnit,
+                ] : null,
                 'dangerous_goods' => false,
-            ];
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
             if (!$item->getIsVirtual() && $quantity > 0) {
                 $fulfillmentOrderItems[] = [
                     'id' => (string)$item->getItemId(),
@@ -301,12 +311,6 @@ class Client extends AbstractHttp
             $body['fulfillment_orders'] = [array_filter([
                 'partner_fulfillment_order_reference' => $this->configuration->getFulfillmentOrderReference($order->getIncrementId()),
                 'location_id' => $this->configuration->getLocationCode(),
-                'delivery' => array_filter([
-                    'shipping_required' => true,
-                    'delivery_type' => $deliveryType,
-                ], static function ($value) {
-                    return $value !== null && $value !== '';
-                }),
                 'line_items' => $fulfillmentOrderItems,
             ], static function ($value) {
                 return $value !== null && $value !== '';
