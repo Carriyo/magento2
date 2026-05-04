@@ -25,6 +25,7 @@
 			<order_mappings>
 				<order_reference_prefix/>
 				<order_status_map>open=processing,partially_allocated=processing,allocated=processing,fulfilled=processing,closed=complete,cancelled=canceled</order_status_map>
+				<custom_attribute_mappings/>
 			</order_mappings>
 			<carriyo_mappings>
 				<auto_book_shipments/>

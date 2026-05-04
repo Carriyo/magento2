@@ -126,6 +126,12 @@
                     <config_path>carriyo/order_mappings/order_reference_prefix</config_path>
                     <validate>validate-no-html-tags</validate>
                 </field>
+                <field id="custom_attribute_mappings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="50"
+                       translate="label" type="textarea">
+                    <label>Custom Attribute Mappings</label>
+                    <comment>Map Magento item attributes to Carriyo custom attributes. One mapping per line, format `magento_attribute=carriyo_attribute`. Magento attributes are looked up first in extension_attributes then in product_options. Example: `gift_message=gift_message` or `internal_sku=warehouse_sku`.</comment>
+                    <config_path>carriyo/order_mappings/custom_attribute_mappings</config_path>
+                </field>
             </group>
             <group id="shipment_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">

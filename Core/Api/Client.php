@@ -277,13 +277,15 @@ class Client extends AbstractHttp
             ]];
         }
 
+        $customAttributeMappings = $this->configuration->getCustomAttributeMappings();
+
         $fulfillmentOrderItems = [];
         foreach ($order->getAllVisibleItems() as $item) {
             if ((int)$item->getQtyOrdered() <= 0) {
                 continue;
             }
             $quantity = (int)$item->getQtyOrdered();
-            $body['line_items'][] = array_filter([
+            $lineItem = array_filter([
                 'id' => (string)$item->getItemId(),
                 'sku' => (string)$item->getSku(),
                 'description' => (string)$item->getName(),
@@ -299,6 +301,11 @@ class Client extends AbstractHttp
             ], static function ($value) {
                 return $value !== null && $value !== '';
             });
+            $customAttributes = $this->buildCustomAttributesPayload($item, $customAttributeMappings);
+            if ($customAttributes) {
+                $lineItem['custom_attributes'] = $customAttributes;
+            }
+            $body['line_items'][] = $lineItem;
             if (!$item->getIsVirtual() && $quantity > 0) {
                 $fulfillmentOrderItems[] = [
                     'id' => (string)$item->getItemId(),
@@ -332,9 +339,10 @@ class Client extends AbstractHttp
         $payment = $order->getPayment();
         $paymentMethod = $payment ? $payment->getMethod() : null;
         $items = [];
+        $customAttributeMappings = $this->configuration->getCustomAttributeMappings();
 
         foreach ($order->getItems() as $item) {
-            $items[] = [
+            $shipmentItem = [
                 'sku' => $item->getSku(),
                 'description' => $item->getName(),
                 'quantity' => (float)$item->getQtyOrdered(),
@@ -344,6 +352,11 @@ class Client extends AbstractHttp
                 ],
                 'dangerous_goods' => false,
             ];
+            $customAttributes = $this->buildCustomAttributesPayload($item, $customAttributeMappings);
+            if ($customAttributes) {
+                $shipmentItem['custom_attributes'] = $customAttributes;
+            }
+            $items[] = $shipmentItem;
         }
 
         $body = [
@@ -393,6 +406,129 @@ class Client extends AbstractHttp
         }
 
         return $body;
+    }
+
+    /**
+     * Build the `custom_attributes` payload fragment for an item based on the
+     * merchant-configured Magento => Carriyo attribute mappings.
+     *
+     * @param object $item Magento sales order/shipment item
+     * @param array<string, string> $mappings Magento attribute name => Carriyo custom attribute name
+     * @return array<string, string[]>
+     */
+    private function buildCustomAttributesPayload($item, array $mappings)
+    {
+        $customAttributes = [];
+        foreach ($mappings as $magentoName => $carriyoName) {
+            $value = $this->resolveMagentoAttributeValue($item, $magentoName);
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $customAttributes[$carriyoName] = [(string)$value];
+        }
+
+        return $customAttributes;
+    }
+
+    /**
+     * Resolve a Magento attribute value from an order/shipment item. Looks up
+     * extension_attributes first, then product_options.
+     *
+     * @param object $item
+     * @param string $magentoName
+     * @return string|null
+     */
+    private function resolveMagentoAttributeValue($item, $magentoName)
+    {
+        if ($magentoName === '' || !is_object($item)) {
+            return null;
+        }
+
+        // 1. extension_attributes
+        if (method_exists($item, 'getExtensionAttributes')) {
+            $extension = $item->getExtensionAttributes();
+            if ($extension !== null) {
+                if (method_exists($extension, 'getDataUsingMethod')) {
+                    $value = $extension->getDataUsingMethod($magentoName);
+                    if ($value !== null && $value !== '' && !is_array($value) && !is_object($value)) {
+                        return (string)$value;
+                    }
+                }
+                if (method_exists($extension, 'getData')) {
+                    $value = $extension->getData($magentoName);
+                    if ($value !== null && $value !== '' && !is_array($value) && !is_object($value)) {
+                        return (string)$value;
+                    }
+                }
+            }
+        }
+
+        // 2. product_options (serialized array commonly under info_buyRequest, attributes_info, options)
+        $productOptions = method_exists($item, 'getProductOptions') ? $item->getProductOptions() : null;
+        if (is_array($productOptions)) {
+            $value = $this->lookupInProductOptions($productOptions, $magentoName);
+            if ($value !== null && $value !== '') {
+                return (string)$value;
+            }
+        }
+
+        // 3. Fallback to direct getData on the item itself
+        if (method_exists($item, 'getData')) {
+            $value = $item->getData($magentoName);
+            if ($value !== null && $value !== '' && !is_array($value) && !is_object($value)) {
+                return (string)$value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Search for the named attribute inside a Magento product_options array.
+     *
+     * @param array $productOptions
+     * @param string $magentoName
+     * @return string|null
+     */
+    private function lookupInProductOptions(array $productOptions, $magentoName)
+    {
+        if (array_key_exists($magentoName, $productOptions)) {
+            $value = $productOptions[$magentoName];
+            if ($value !== null && $value !== '' && !is_array($value) && !is_object($value)) {
+                return (string)$value;
+            }
+        }
+
+        foreach (['info_buyRequest', 'attributes_info', 'options', 'additional_options'] as $bucket) {
+            if (!isset($productOptions[$bucket])) {
+                continue;
+            }
+            $section = $productOptions[$bucket];
+            if (!is_array($section)) {
+                continue;
+            }
+            if (array_key_exists($magentoName, $section)) {
+                $value = $section[$magentoName];
+                if ($value !== null && $value !== '' && !is_array($value) && !is_object($value)) {
+                    return (string)$value;
+                }
+            }
+            // attributes_info / options are typically lists of {label, value, code} entries.
+            foreach ($section as $entry) {
+                if (!is_array($entry)) {
+                    continue;
+                }
+                $code = $entry['code'] ?? $entry['label'] ?? null;
+                if ($code !== null && $code === $magentoName && isset($entry['value'])) {
+                    $value = $entry['value'];
+                    if ($value !== null && $value !== '' && !is_array($value) && !is_object($value)) {
+                        return (string)$value;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

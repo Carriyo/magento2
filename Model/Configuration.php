@@ -33,6 +33,7 @@ class Configuration
     public const CONFIG_PATH_ORDER_STATUS_MAP = 'carriyo/order_mappings/order_status_map';
     public const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
     public const CONFIG_PATH_ORDER_PREFIX = 'carriyo/order_mappings/order_reference_prefix';
+    public const CONFIG_PATH_CUSTOM_ATTRIBUTE_MAPPINGS = 'carriyo/order_mappings/custom_attribute_mappings';
 
     /**
      * @var ScopeConfigInterface
@@ -287,6 +288,30 @@ class Configuration
         return $prefix !== '' && strpos((string)$orderReference, $prefix) === 0
             ? substr((string)$orderReference, strlen($prefix))
             : (string)$orderReference;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomAttributeMappings()
+    {
+        $map = [];
+        $raw = (string)$this->configReader->getValue(self::CONFIG_PATH_CUSTOM_ATTRIBUTE_MAPPINGS);
+        // Allow both newline- and comma-separated entries for flexibility in the textarea.
+        $entries = preg_split('/[\r\n,]+/', $raw) ?: [];
+        foreach ($entries as $entry) {
+            $entry = trim((string)$entry);
+            if ($entry === '') {
+                continue;
+            }
+            [$magentoName, $carriyoName] = array_pad(array_map('trim', explode('=', $entry, 2)), 2, null);
+            if ($magentoName === null || $magentoName === '' || $carriyoName === null || $carriyoName === '') {
+                continue;
+            }
+            $map[$magentoName] = $carriyoName;
+        }
+
+        return $map;
     }
 
     /**
