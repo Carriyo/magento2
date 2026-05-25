@@ -8,11 +8,11 @@ namespace Carriyo\Shipment\Core\Api;
 
 use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Configuration;
+use DateTimeImmutable;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Address;
-use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception;
@@ -213,15 +213,15 @@ class Client extends AbstractHttp
             unset($body['delivery_type']);
         }
         $storeTimezone = new DateTimeZone((string)($order->getStore() ? $order->getStore()->getConfig('general/locale/timezone') : '') ?: 'UTC');
-        $deliverySchedule = array_filter(array_map(static function ($value) use ($storeTimezone) {
-            if ($value instanceof DateTimeInterface) {
-                return $value->format(DateTimeInterface::ATOM);
-            }
+        $utcTimezone = new DateTimeZone('UTC');
+        $deliverySchedule = array_filter(array_map(static function ($value) use ($storeTimezone, $utcTimezone) {
             if ($value === null || $value === '') {
                 return null;
             }
             try {
-                return (new DateTime((string)$value, $storeTimezone))->format(DateTimeInterface::ATOM);
+                return ($value instanceof DateTimeInterface ? DateTimeImmutable::createFromInterface($value) : new DateTimeImmutable((string)$value, $storeTimezone))
+                    ->setTimezone($utcTimezone)
+                    ->format('Y-m-d\TH:i:s.000\Z');
             } catch (Exception $e) {
                 return null;
             }
