@@ -33,6 +33,8 @@ class Configuration
     public const CONFIG_PATH_ORDER_STATUS_MAP = 'carriyo/order_mappings/order_status_map';
     public const CONFIG_PATH_SHIPMENT_PREFIX = 'carriyo/carriyo_mappings/shipment_reference_prefix';
     public const CONFIG_PATH_ORDER_PREFIX = 'carriyo/order_mappings/order_reference_prefix';
+    public const CONFIG_PATH_DELIVERY_SCHEDULE_FROM_FIELD = 'carriyo/order_mappings/delivery_schedule_from_field';
+    public const CONFIG_PATH_DELIVERY_SCHEDULE_TO_FIELD = 'carriyo/order_mappings/delivery_schedule_to_field';
 
     /**
      * @var ScopeConfigInterface
@@ -227,6 +229,22 @@ class Configuration
         }
 
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeliveryScheduleFromField()
+    {
+        return trim((string)$this->configReader->getValue(self::CONFIG_PATH_DELIVERY_SCHEDULE_FROM_FIELD));
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeliveryScheduleToField()
+    {
+        return trim((string)$this->configReader->getValue(self::CONFIG_PATH_DELIVERY_SCHEDULE_TO_FIELD));
     }
 
     /**

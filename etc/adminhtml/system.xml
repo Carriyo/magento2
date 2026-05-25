@@ -126,6 +126,20 @@
                     <config_path>carriyo/order_mappings/order_reference_prefix</config_path>
                     <validate>validate-no-html-tags</validate>
                 </field>
+                <field id="delivery_schedule_from_field" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="50"
+                       translate="label" type="text">
+                    <label>Delivery Schedule From Date Mapping</label>
+                    <comment>Optional Magento order-level custom field name to map into `delivery_schedule.scheduled_from`.</comment>
+                    <config_path>carriyo/order_mappings/delivery_schedule_from_field</config_path>
+                    <validate>validate-no-html-tags</validate>
+                </field>
+                <field id="delivery_schedule_to_field" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="60"
+                       translate="label" type="text">
+                    <label>Delivery Schedule To Date Mapping</label>
+                    <comment>Optional Magento order-level custom field name to map into `delivery_schedule.scheduled_to`.</comment>
+                    <config_path>carriyo/order_mappings/delivery_schedule_to_field</config_path>
+                    <validate>validate-no-html-tags</validate>
+                </field>
             </group>
             <group id="shipment_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">

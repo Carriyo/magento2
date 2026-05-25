@@ -12,6 +12,10 @@ use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Address;
+use DateTime;
+use DateTimeInterface;
+use DateTimeZone;
+use Exception;
 
 class Client extends AbstractHttp
 {
@@ -207,6 +211,28 @@ class Client extends AbstractHttp
         $body['delivery_type'] = $this->configuration->getDeliveryType((string)$order->getShippingMethod());
         if ($body['delivery_type'] === null || $body['delivery_type'] === '') {
             unset($body['delivery_type']);
+        }
+        $storeTimezone = new DateTimeZone((string)($order->getStore() ? $order->getStore()->getConfig('general/locale/timezone') : '') ?: 'UTC');
+        $deliverySchedule = array_filter(array_map(static function ($value) use ($storeTimezone) {
+            if ($value instanceof DateTimeInterface) {
+                return $value->format(DateTimeInterface::ATOM);
+            }
+            if ($value === null || $value === '') {
+                return null;
+            }
+            try {
+                return (new DateTime((string)$value, $storeTimezone))->format(DateTimeInterface::ATOM);
+            } catch (Exception $e) {
+                return null;
+            }
+        }, [
+            'scheduled_from' => ($field = $this->configuration->getDeliveryScheduleFromField()) !== '' ? $order->getData($field) : null,
+            'scheduled_to' => ($field = $this->configuration->getDeliveryScheduleToField()) !== '' ? $order->getData($field) : null,
+        ]), static function ($value) {
+            return $value !== null && $value !== '';
+        });
+        if ($deliverySchedule) {
+            $body['delivery_schedule'] = $deliverySchedule;
         }
 
         if ($shippingAddress) {
