@@ -19,6 +19,8 @@ use Exception;
 
 class Client extends AbstractHttp
 {
+    private const CUSTOM_ATTRIBUTE_TEXT_LENGTH_MAX = 500;
+
     /**
      * @var OAuth
      */
@@ -196,6 +198,7 @@ class Client extends AbstractHttp
         $shippingAddress = $order->getShippingAddress() ?: $order->getBillingAddress();
         $billingAddress = $order->getBillingAddress();
         $weightUnit = $this->configuration->getWeightUnit();
+        $productOptionsCustomAttribute = $this->configuration->getProductOptionsCustomAttribute();
         $body = [
             'sales_channel' => 'magento',
             'payment' => [
@@ -309,7 +312,7 @@ class Client extends AbstractHttp
                 continue;
             }
             $quantity = (int)$item->getQtyOrdered();
-            $body['line_items'][] = array_filter([
+            $lineItem = [
                 'id' => (string)$item->getItemId(),
                 'sku' => (string)$item->getSku(),
                 'description' => (string)$item->getName(),
@@ -322,10 +325,38 @@ class Client extends AbstractHttp
                     'unit' => $weightUnit,
                 ] : null,
                 'dangerous_goods' => false,
-            ], static function ($value) {
+            ];
+            if ($productOptionsCustomAttribute !== '') {
+                $optionTexts = [];
+                foreach ((array)$item->getProductOptionByCode('options') as $option) {
+                    $label = trim((string)($option['label'] ?? ''));
+                    $value = $option['print_value'] ?? $option['value'] ?? null;
+                    if (is_array($value)) {
+                        $value = implode(', ', array_filter(array_map('trim', $value), static function ($itemValue) {
+                            return $itemValue !== '';
+                        }));
+                    } else {
+                        $value = trim(preg_replace('/\s+/', ' ', strip_tags((string)$value)));
+                    }
+                    if ($label !== '' || $value !== '') {
+                        $optionTexts[] = $label !== '' && $value !== ''
+                            ? sprintf('%s: %s', $label, $value)
+                            : ($label !== '' ? $label : $value);
+                    }
+                }
+                if ($optionTexts) {
+                    $optionText = implode(', ', $optionTexts);
+                    $lineItem['custom_attributes'] = [
+                        $productOptionsCustomAttribute => [function_exists('mb_substr')
+                            ? mb_substr($optionText, 0, self::CUSTOM_ATTRIBUTE_TEXT_LENGTH_MAX)
+                            : substr($optionText, 0, self::CUSTOM_ATTRIBUTE_TEXT_LENGTH_MAX)],
+                    ];
+                }
+            }
+            $body['line_items'][] = array_filter($lineItem, static function ($value) {
                 return $value !== null && $value !== '';
             });
-            if (!$item->getIsVirtual() && $quantity > 0) {
+            if (!$item->getIsVirtual()) {
                 $fulfillmentOrderItems[] = [
                     'id' => (string)$item->getItemId(),
                     'quantity' => $quantity,
@@ -342,7 +373,6 @@ class Client extends AbstractHttp
                 return $value !== null && $value !== '';
             })];
         }
-
         return $body;
     }
 

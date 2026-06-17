@@ -140,6 +140,13 @@
                     <config_path>carriyo/order_mappings/delivery_schedule_to_field</config_path>
                     <validate>validate-no-html-tags</validate>
                 </field>
+                <field id="product_options_custom_attribute" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70"
+                       translate="label" type="text">
+                    <label>Product Options Custom Attribute Code</label>
+                    <comment>Optional Carriyo free text custom attribute code with PRODUCT scope to store concatenated Magento product options on each line item.</comment>
+                    <config_path>carriyo/order_mappings/product_options_custom_attribute</config_path>
+                    <validate>validate-no-html-tags</validate>
+                </field>
             </group>
             <group id="shipment_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30"
                    translate="label">
