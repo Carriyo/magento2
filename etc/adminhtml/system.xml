@@ -126,6 +126,13 @@
                     <config_path>carriyo/order_mappings/order_reference_prefix</config_path>
                     <validate>validate-no-html-tags</validate>
                 </field>
+                <field id="default_sales_channel" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="45"
+                       translate="label" type="text">
+                    <label>Default Sales Channel</label>
+                    <comment>Optional sales channel to send for Carriyo orders.</comment>
+                    <config_path>carriyo/order_mappings/default_sales_channel</config_path>
+                    <validate>validate-no-html-tags</validate>
+                </field>
                 <field id="delivery_schedule_from_field" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="50"
                        translate="label" type="text">
                     <label>Delivery Schedule From Date Mapping</label>

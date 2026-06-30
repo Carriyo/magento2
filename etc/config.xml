@@ -24,6 +24,7 @@
 			</pickup_address>
 			<order_mappings>
 				<order_reference_prefix/>
+				<default_sales_channel/>
 				<delivery_schedule_from_field/>
 				<delivery_schedule_to_field/>
 				<order_status_map>open=processing,partially_allocated=processing,allocated=processing,fulfilled=processing,closed=complete,cancelled=canceled</order_status_map>

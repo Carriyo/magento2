@@ -197,7 +197,7 @@ class Client extends AbstractHttp
         $billingAddress = $order->getBillingAddress();
         $weightUnit = $this->configuration->getWeightUnit();
         $body = [
-            'sales_channel' => 'magento',
+            'sales_channel' => $this->configuration->getDefaultSalesChannel() ?: 'magento',
             'payment' => [
                 'currency' => $order->getOrderCurrencyCode(),
                 'order_total' => (float)$order->getGrandTotal(),
