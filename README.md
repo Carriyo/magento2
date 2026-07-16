@@ -48,6 +48,33 @@ The following settings can be found in
 - Shipment Mode Settings (shown when integration mode is `Shipments`)
   - Shipment status mapping, auto-book toggle, optional shipment reference prefix
 
+## Upgrading from 1.3.x to 2.0.0
+
+Version 2.0.0 turns the connector from a shipment-only plugin into a dual-mode integration.
+
+### What's new
+
+- **Integration modes** — a new `Integration Mode` setting selects how Magento integrates with Carriyo:
+  - `Shipments` (equivalent to the 1.3.x behaviour): Magento remains the fulfillment system and each order is sent to Carriyo as a shipment.
+  - `Orders`: Magento sends orders to Carriyo and Carriyo manages fulfillment; shipments created in Carriyo are synced back to Magento, including Magento-native tracking links.
+- **Order mode settings** — order status mapping, optional order reference prefix, default sales channel, and delivery schedule field mappings (map Magento order attributes to `delivery_schedule.scheduled_from`/`scheduled_to`).
+- **Restructured admin configuration** — settings are grouped into General, Connection, Sync Triggers, and per-mode groups that only appear for the selected integration mode.
+- **Item weights** are now included on synced line items.
+- **Automatic sync dedupe** — outbound syncs are hashed so unchanged orders are not re-sent on every save.
+
+### Behaviour changes
+
+- Carriyo shipment webhooks with a status that is not in the Shipment Status Mapping are now acknowledged and ignored, instead of failing with HTTP 400 and being retried by Carriyo.
+- Default status mappings are trimmed to the transitions that change the Magento order state; statuses not mapped are ignored. Existing saved mappings are not modified.
+- Skipped status updates no longer add noisy comments to the order status history.
+
+### Upgrade steps
+
+1. Update the module (`composer require carriyo/module-shipment:"^2.0.0"` or replace `app/code/Carriyo/Shipment`).
+2. Run `php bin/magento setup:upgrade` — a data migration renames the old sync-flow values to the new integration modes (`shipment_only` → `shipments`, `order_and_shipment` → `orders`) and defaults to `shipments` when unset, so 1.3.x installs keep their current behaviour.
+3. Run `php bin/magento setup:di:compile` and `php bin/magento cache:flush`.
+4. Review `Stores -> Configuration -> Carriyo -> Settings`: confirm the Integration Mode and the status mappings for your mode.
+
 ### Running in local environment
 In order to run this environment please make sure you have `docker` and `docker-compose` installed.
 
