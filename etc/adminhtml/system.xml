@@ -163,7 +163,7 @@
                 <field id="shipment_status_map" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                        translate="label comment" type="textarea">
                     <label>Shipment Status Mapping</label>
-                    <comment>Maps Carriyo shipment statuses to Magento order statuses when Carriyo sends a shipment update. Statuses not listed here are ignored. Example: booked=processing, shipped=processing, delivered=complete, cancelled=canceled</comment>
+                    <comment>Maps Carriyo shipment statuses to Magento order statuses when Carriyo sends a shipment update. Statuses not listed here are ignored. Example: booked=processing, delivered=complete, cancelled=canceled</comment>
                     <config_path>carriyo/carriyo_mappings/order_status_map</config_path>
                 </field>
                 <field id="auto_book_shipments" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1"
