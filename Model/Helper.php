@@ -470,7 +470,6 @@ class Helper
      * @param string $orderReference
      * @param string $carriyoStatus
      * @return bool
-     * @throws LocalizedException
      */
     public function updateOrder($orderReference, $carriyoStatus)
     {
@@ -485,8 +484,10 @@ class Helper
 
         $statusMap = $this->configuration->getShipmentMappedStatuses();
         if (!isset($statusMap[$carriyoStatus])) {
-            $this->logger->error("Carriyo Status Not Mapped To Magento Status");
-            throw new LocalizedException(__("INVALID STATUS {$carriyoStatus}"));
+            if ($this->configuration->isDebugEnabled()) {
+                $this->logger->debug("Skipping unmapped Carriyo status {$carriyoStatus} for OrderId {$orderReference}");
+            }
+            return false;
         }
 
         $magentoStatus = $statusMap[$carriyoStatus];
