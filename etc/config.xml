@@ -27,7 +27,7 @@
 				<default_sales_channel/>
 				<delivery_schedule_from_field/>
 				<delivery_schedule_to_field/>
-				<order_status_map>open=processing,partially_allocated=processing,allocated=processing,fulfilled=processing,closed=complete,cancelled=canceled</order_status_map>
+				<order_status_map>processing=processing,closed=complete,cancelled=canceled</order_status_map>
 			</order_mappings>
 			<carriyo_mappings>
 				<auto_book_shipments/>

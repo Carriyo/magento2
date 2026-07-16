@@ -36,15 +36,17 @@ This module integrates your ecommerce with Carriyo platform.
 The following settings can be found in
 `Stores -> Configuration -> Carriyo -> Settings`
 
-- Common Settings
-  - Sync Flow: `Shipment Only` or `Order and Shipment`
-  - API Domain, Tenant ID, Merchant ID, API Key, Client ID, Client Secret
-- Order Mappings
-  - Allowed statuses and order status mapping
-  - Optional order reference prefix
-- Shipment Mappings
-  - Location code, auto-book toggle, shipping method mapping
-  - Optional shipment reference prefix
+- General
+  - Enable toggle, debug logging, integration mode (`Orders` or `Shipments`)
+  - Default location code and shipping method mapping
+- Connection
+  - API Base URL, Tenant ID, Merchant ID, API Key, Client ID, Client Secret
+- Sync Triggers
+  - Magento order statuses that send orders to Carriyo (COD vs other payment methods)
+- Order Mode Settings (shown when integration mode is `Orders`)
+  - Order status mapping, optional order reference prefix, default sales channel, delivery schedule field mappings
+- Shipment Mode Settings (shown when integration mode is `Shipments`)
+  - Shipment status mapping, auto-book toggle, optional shipment reference prefix
 
 ### Running in local environment
 In order to run this environment please make sure you have `docker` and `docker-compose` installed.
