@@ -8,6 +8,9 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
 	<default>
 		<carriyo>
+			<general>
+				<integration_mode>orders</integration_mode>
+			</general>
 			<api_credentials>
 				<api_url>https://api.carriyo.com</api_url>
 				<tenant_id/>
@@ -16,12 +19,23 @@
 				<client_id/>
 				<client_secret/>
 			</api_credentials>
+			<pickup_address>
+				<location_code/>
+			</pickup_address>
+			<order_mappings>
+				<order_reference_prefix/>
+				<default_sales_channel/>
+				<delivery_schedule_from_field/>
+				<delivery_schedule_to_field/>
+				<order_status_map>open=processing,partially_allocated=processing,allocated=processing,fulfilled=processing,closed=complete,cancelled=canceled</order_status_map>
+			</order_mappings>
 			<carriyo_mappings>
 				<auto_book_shipments/>
 				<shipping_methods_map/>
 				<allowed_statuses_other>processing</allowed_statuses_other>
 				<allowed_statuses_cod>pending,processing</allowed_statuses_cod>
-				<order_status_map>booked=processing,shipped=processing,delivered=complete</order_status_map>
+				<order_status_map>booked=processing,shipped=processing,delivered=complete,cancelled=canceled</order_status_map>
+				<shipment_reference_prefix/>
 			</carriyo_mappings>
 		</carriyo>
 	</default>

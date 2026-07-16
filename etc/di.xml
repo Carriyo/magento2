@@ -25,4 +25,14 @@
 		<plugin name="orderShipmentButton"
 				type="Carriyo\Shipment\Plugin\Adminhtml\Order\View"/>
 	</type>
+
+	<type name="Magento\Sales\Model\Order\Shipment\Track">
+		<plugin name="carriyoTrackingLinkForShipmentTrack"
+				type="Carriyo\Shipment\Plugin\TrackingLink"/>
+	</type>
+
+	<type name="Magento\Shipping\Model\Order\Track">
+		<plugin name="carriyoTrackingLinkForOrderTrack"
+				type="Carriyo\Shipment\Plugin\TrackingLink"/>
+	</type>
 </config>

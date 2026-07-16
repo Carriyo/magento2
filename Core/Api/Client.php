@@ -6,18 +6,17 @@
 
 namespace Carriyo\Shipment\Core\Api;
 
-
 use Carriyo\Shipment\Logger\Logger;
 use Carriyo\Shipment\Model\Configuration;
+use DateTimeImmutable;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Address;
+use DateTimeInterface;
+use DateTimeZone;
+use Exception;
 
-/**
- * Class Client
- *
- * @package Carriyo\Shipment\Core\Api
- */
 class Client extends AbstractHttp
 {
     /**
@@ -31,18 +30,17 @@ class Client extends AbstractHttp
     private $logger;
 
     /**
-     * Client constructor.
      * @param Configuration $configuration
      * @param SerializerInterface $serializer
      * @param OAuth $oauth
+     * @param Logger $logger
      */
     public function __construct(
         Configuration $configuration,
         SerializerInterface $serializer,
         OAuth $oauth,
         Logger $logger
-    )
-    {
+    ) {
         parent::__construct($configuration, $serializer);
         $this->oauth = $oauth;
         $this->logger = $logger;
@@ -50,198 +48,317 @@ class Client extends AbstractHttp
 
     /**
      * @param OrderInterface $order
-     * @param \Magento\Sales\Api\Data\ShipmentInterface $shipment
-     * @return array|bool|float|int|string|null
+     * @return array
      */
-    public function createShipment(OrderInterface $order, bool $autoBookShipments)
+    public function createOrder(OrderInterface $order)
     {
-        $response = null;
-        try {
-            $body = $this->getRequestBody($order);
-            if ($this->configuration->isDebugEnabled()) {
-                $this->logger->debug("Carriyo createShipment Request Body {$order->getIncrementId()} " . print_r($body, 1));
-            }
-            $url = $this->configuration->getUrl() . '/shipments';
-            if(!$autoBookShipments) {
-                $url = $url . '?draft=true';
-            }
-            $response = $this->getClient()
-                ->post($url, ['json' => $body]);
-
-        } catch (\Exception $exception) {
-            $this->logger->error('Failed sending create shipment to ' . $this->configuration->getUrl());
-            $this->logger->error('Carriyo createShipment Exception ' . $exception->getMessage());
-            return ['errors' => $exception->getMessage()];
-        }
-        return $this->serializer->unserialize($response->getBody()->getContents());
-    }
-
-    /**
-     * @param $orderId
-     * @return array|bool|float|int|string|null
-     */
-    public function cancelShipment($orderId)
-    {
-        $response = null;
-        try {
-            if ($this->configuration->isDebugEnabled()) {
-                $this->logger->debug("Carriyo Cancel Request " . $orderId);
-            }
-            $response = $this->getClient()
-                ->patch($this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($orderId) . "/cancel");
-
-        } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->error('Carriyo cancelShipment Exception ' . $exception->getMessage());
-            return ['errors' => $exception->getMessage()];
-        }
-        return $this->serializer->unserialize($response->getBody()->getContents());
-    }
-
-    /**
-     * @param OrderInterface $order
-     * @return array|bool|float|int|string|null
-     */
-    public function updateShipment(OrderInterface $order, bool $autoBookShipments)
-    {
-        $response = null;
-        try {
-            $body = $this->getRequestBody($order);
-            if ($this->configuration->isDebugEnabled()) {
-                $this->logger->debug("Carriyo updateShipment Request Body {$order->getIncrementId()} " . print_r($body, 1));
-            }
-            $url = $this->configuration->getUrl() . "/shipments/" . $this->configuration->getShipmentReference($order->getIncrementId());
-            if($autoBookShipments) {
-                $url = $url . '/confirm';
-                $response = $this->getClient()
-                    ->post($url, ['json' => $body]);
-            } else {
-                $response = $this->getClient()
-                    ->patch($url, ['json' => $body]);
-            }
-        } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $this->logger->error('Failed sending update shipment request to ' . $this->configuration->getUrl());
-            $this->logger->error('Carriyo updateShipment Exception ' . $exception->getMessage());
-            return ['errors' => $exception->getMessage()];
-        }
-        return $this->serializer->unserialize($response->getBody()->getContents());
-    }
-
-    /**
-     * @param OrderInterface $order
-     * @param \Magento\Sales\Api\Data\ShipmentInterface $shipment
-     * @return array|bool|float|int|string|null
-     */
-    public function send(OrderInterface $order, $shipment)
-    {
-        $response = null;
-        try {
-            /** @var Address $shippingAddress */
-            $shippingAddress = $order->getShippingAddress();
-            $payment = $order->getPayment();
-            $paymentMethod = $payment->getMethod();
-
-            $items = [];
-            foreach ($shipment->getItems() as $item) {
-                $items[] = [
-                    'sku' => $item->getSku(),
-                    'description' => $item->getName(),
-                    'quantity' => (float)$item->getQty(),
-                    'price' => [
-                        'amount' => (float)$item->getPrice(),
-                        'currency' => $order->getOrderCurrencyCode()
-                    ]
-                ];
-            }
-
-            $body = [
-                'entity_type' => 'FORWARD',
-                'source' => [
-                    'source_type'=> 'magento_connector'
-                ],
-                'references' => [
-                    'partner_order_reference' => $order->getIncrementId(),
-                    'partner_shipment_reference' => $this->configuration->getShipmentReference($shipment->getIncrementId()),
-                ],
-                'payment' => [
-                    'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',
-                    'total_amount' => $order->getGrandTotal(),
-                    'pending_amount' => $paymentMethod === 'cashondelivery' ? $order->getGrandTotal() : 0,
-                    'currency' => $order->getOrderCurrencyCode()
-                ],
-                'delivery' => [
-                    'delivery_type' => $this->configuration->getDeliveryType($order->getShippingMethod())
-                ],
-                'items' => $items,
-                'pickup' => [
-                    'partner_location_code' => $this->configuration->getLocationCode()
-                ],
-                'dropoff' => [
-                    'contact_name' => implode(" ", [$shippingAddress->getFirstname(), $shippingAddress->getLastname()]),
-                    'contact_phone' => $shippingAddress->getTelephone(),
-                    'contact_email' => $shippingAddress->getEmail(),
-                    'address1' => implode(",", $shippingAddress->getStreet()),
-                    'city' => $shippingAddress->getCity(),
-                    'state' => $shippingAddress->getRegion(),
-                    'postcode' => $shippingAddress->getPostcode(),
-                    'country' => $shippingAddress->getCountryId(),
-                ]
-            ];
-
-            if (!empty($this->configuration->getMerchant())) {
-                $body['merchant'] = $this->configuration->getMerchant();
-            }
-
-            if ($this->configuration->isDebugEnabled()) {
-                $this->logger->debug("Carriyo send Request Body {$order->getIncrementId()} " . print_r($body, 1));
-            }
-
-            $response = $this->getClient()
-                ->post($this->configuration->getUrl() . '/shipments', ['json' => $body]);
-        } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
-            return [
-                'errors' => ['Error trying to reach Carriyo, please create the shipment manually']
-            ];
-        } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            //$message = $this->serializer->unserialize($exception->getResponse()->getBody()->getContents())['errors'];
-            return ['errors' => $exception->getMessage()];
-        }
-
-        return $this->serializer->unserialize($response->getBody()->getContents());
-    }
-
-    protected function beforeGetClient()
-    {
-        if (!$this->headers) {
-            $this->headers = [
-                'x-api-key' => $this->configuration->getApiKey(),
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->oauth->getAccessToken(),
-                'tenant-id' => $this->configuration->getTenantId()
-            ];
-
-            if ($this->configuration->isDebugEnabled()) {
-                $this->logger->debug(
-                    'Carriyo Auth Debug Headers: ' . print_r([
-                        'x-api-key' => $this->headers['x-api-key'] ?? null,
-                        'tenant-id' => $this->headers['tenant-id'] ?? null,
-                        'Authorization' => $this->headers['Authorization'] ?? null,
-                    ], true)
-                );
-            }
-        }
+        return $this->request('post', '/orders', $this->getOrderRequestBody($order), $order);
     }
 
     /**
      * @param OrderInterface $order
      * @return array
      */
-    protected function getRequestBody(OrderInterface $order)
+    public function updateOrder(OrderInterface $order)
     {
-        $shippingAddress = $order->getShippingAddress();
-        $payment = $order->getPayment();
-        $paymentMethod = $payment->getMethod();
+        return $this->request(
+            'patch',
+            sprintf('/orders/%s?key=partner_order_reference', rawurlencode($this->configuration->getOrderReference($order->getIncrementId()))),
+            $this->getOrderRequestBody($order, false),
+            $order
+        );
+    }
 
+    /**
+     * @param OrderInterface $order
+     * @param bool $isLinkedOrder
+     * @return string
+     */
+    public function getOrderPayloadHash(OrderInterface $order, $isLinkedOrder = false)
+    {
+        return $this->getPayloadHash($this->getOrderRequestBody($order, !$isLinkedOrder));
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param bool $autoBookShipments
+     * @return string
+     */
+    public function getShipmentPayloadHash(OrderInterface $order, $autoBookShipments)
+    {
+        return $this->getPayloadHash([
+            'auto_book_shipments' => (bool)$autoBookShipments,
+            'body' => $this->getShipmentRequestBody(
+                $order,
+                $this->configuration->getShipmentReference($order->getIncrementId())
+            ),
+        ]);
+    }
+
+    /**
+     * @param string $orderReference
+     * @return array
+     */
+    public function cancelOrder($orderReference)
+    {
+        return $this->request(
+            'post',
+            sprintf('/orders/%s/cancel?key=partner_order_reference', rawurlencode($this->configuration->getOrderReference($orderReference))),
+            ['cancellation_reason' => 'ORDER_CANCELLED']
+        );
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param bool $autoBookShipments
+     * @return array
+     */
+    public function createShipment(OrderInterface $order, $autoBookShipments)
+    {
+        $path = '/shipments' . ($autoBookShipments ? '' : '?draft=true');
+
+        return $this->request(
+            'post',
+            $path,
+            $this->getShipmentRequestBody($order, $this->configuration->getShipmentReference($order->getIncrementId())),
+            $order
+        );
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param bool $autoBookShipments
+     * @return array
+     */
+    public function updateShipment(OrderInterface $order, $autoBookShipments)
+    {
+        $shipmentReference = $this->configuration->getShipmentReference($order->getIncrementId());
+
+        return $this->request(
+            $autoBookShipments ? 'post' : 'patch',
+            $autoBookShipments
+                ? sprintf('/shipments/%s/confirm', rawurlencode($shipmentReference))
+                : sprintf('/shipments/%s', rawurlencode($shipmentReference)),
+            $this->getShipmentRequestBody($order, $shipmentReference),
+            $order
+        );
+    }
+
+    /**
+     * @param string $orderReference
+     * @return array
+     */
+    public function cancelShipment($orderReference)
+    {
+        return $this->request(
+            'patch',
+            sprintf('/shipments/%s/cancel', rawurlencode($this->configuration->getShipmentReference($orderReference))),
+            []
+        );
+    }
+
+    /**
+     * @return void
+     */
+    protected function beforeGetClient()
+    {
+        if ($this->headers) {
+            return;
+        }
+
+        $this->headers = [
+            'x-api-key' => $this->configuration->getApiKey(),
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->oauth->getAccessToken(),
+            'tenant-id' => $this->configuration->getTenantId()
+        ];
+
+        if ($this->configuration->isDebugEnabled()) {
+            $this->logger->debug(
+                'Carriyo Auth Debug Headers: ' . print_r([
+                    'x-api-key' => $this->headers['x-api-key'] ?? null,
+                    'tenant-id' => $this->headers['tenant-id'] ?? null,
+                    'Authorization' => $this->headers['Authorization'] ?? null,
+                ], true)
+            );
+        }
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param bool $includePartnerOrderReference
+     * @return array
+     */
+    protected function getOrderRequestBody(OrderInterface $order, $includePartnerOrderReference = true)
+    {
+        $payment = $order->getPayment();
+        $paymentMethod = $payment ? $payment->getMethod() : null;
+        $shippingAddress = $order->getShippingAddress() ?: $order->getBillingAddress();
+        $billingAddress = $order->getBillingAddress();
+        $weightUnit = $this->configuration->getWeightUnit();
+        $body = [
+            'sales_channel' => $this->configuration->getDefaultSalesChannel() ?: 'magento',
+            'payment' => [
+                'currency' => $order->getOrderCurrencyCode(),
+                'order_total' => (float)$order->getGrandTotal(),
+                'payment_on_delivery' => $paymentMethod === 'cashondelivery' ? (float)$order->getGrandTotal() : 0.0,
+            ],
+            'line_items' => [],
+        ];
+        if ($includePartnerOrderReference) {
+            $body['partner_order_reference'] = $this->configuration->getOrderReference($order->getIncrementId());
+        }
+        $body['delivery_type'] = $this->configuration->getDeliveryType((string)$order->getShippingMethod());
+        if ($body['delivery_type'] === null || $body['delivery_type'] === '') {
+            unset($body['delivery_type']);
+        }
+        $storeTimezone = new DateTimeZone((string)($order->getStore() ? $order->getStore()->getConfig('general/locale/timezone') : '') ?: 'UTC');
+        $utcTimezone = new DateTimeZone('UTC');
+        $deliverySchedule = array_filter(array_map(static function ($value) use ($storeTimezone, $utcTimezone) {
+            if ($value === null || $value === '') {
+                return null;
+            }
+            try {
+                return ($value instanceof DateTimeInterface ? DateTimeImmutable::createFromInterface($value) : new DateTimeImmutable((string)$value, $storeTimezone))
+                    ->setTimezone($utcTimezone)
+                    ->format('Y-m-d\TH:i:s.000\Z');
+            } catch (Exception $e) {
+                return null;
+            }
+        }, [
+            'scheduled_from' => ($field = $this->configuration->getDeliveryScheduleFromField()) !== '' ? $order->getData($field) : null,
+            'scheduled_to' => ($field = $this->configuration->getDeliveryScheduleToField()) !== '' ? $order->getData($field) : null,
+        ]), static function ($value) {
+            return $value !== null && $value !== '';
+        });
+        if ($deliverySchedule) {
+            $body['delivery_schedule'] = $deliverySchedule;
+        }
+
+        if ($shippingAddress) {
+            $body['delivery_address'] = array_filter([
+                'contact_name' => trim(implode(' ', array_filter([$shippingAddress->getFirstname(), $shippingAddress->getLastname()]))),
+                'contact_phone' => $shippingAddress->getTelephone(),
+                'contact_email' => $shippingAddress->getEmail(),
+                'company_name' => $shippingAddress->getCompany(),
+                'address1' => implode(', ', (array)$shippingAddress->getStreet()),
+                'city' => $shippingAddress->getCity(),
+                'state' => $shippingAddress->getRegion(),
+                'postcode' => $shippingAddress->getPostcode(),
+                'country' => $shippingAddress->getCountryId(),
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+            $body['customer'] = array_filter([
+                'contact_name' => trim(implode(' ', array_filter([$order->getCustomerFirstname(), $order->getCustomerLastname()]))),
+                'contact_phone' => $shippingAddress->getTelephone(),
+                'contact_email' => $order->getCustomerEmail(),
+                'address1' => implode(', ', (array)$shippingAddress->getStreet()),
+                'city' => $shippingAddress->getCity(),
+                'state' => $shippingAddress->getRegion(),
+                'postcode' => $shippingAddress->getPostcode(),
+                'country' => $shippingAddress->getCountryId(),
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+        }
+
+        if ($billingAddress) {
+            $body['billing_address'] = array_filter([
+                'contact_name' => trim(implode(' ', array_filter([$billingAddress->getFirstname(), $billingAddress->getLastname()]))),
+                'contact_phone' => $billingAddress->getTelephone(),
+                'contact_email' => $billingAddress->getEmail(),
+                'company_name' => $billingAddress->getCompany(),
+                'address1' => implode(', ', (array)$billingAddress->getStreet()),
+                'city' => $billingAddress->getCity(),
+                'state' => $billingAddress->getRegion(),
+                'postcode' => $billingAddress->getPostcode(),
+                'country' => $billingAddress->getCountryId(),
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+            $body['customer'] = $body['customer'] ?? array_filter([
+                'contact_name' => trim(implode(' ', array_filter([$order->getCustomerFirstname(), $order->getCustomerLastname()]))),
+                'contact_phone' => $billingAddress->getTelephone(),
+                'contact_email' => $order->getCustomerEmail(),
+                'address1' => implode(', ', (array)$billingAddress->getStreet()),
+                'city' => $billingAddress->getCity(),
+                'state' => $billingAddress->getRegion(),
+                'postcode' => $billingAddress->getPostcode(),
+                'country' => $billingAddress->getCountryId(),
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+        }
+
+        if ($this->configuration->getMerchant() !== '') {
+            $body['merchant'] = $this->configuration->getMerchant();
+        }
+
+        if ($order->getShippingDescription() || $order->getShippingMethod()) {
+            $body['shipping_lines'] = [[
+                'name' => (string)($order->getShippingDescription() ?: $order->getShippingMethod()),
+                'carrier' => (string)$order->getShippingMethod(),
+                'price' => (float)$order->getShippingAmount(),
+            ]];
+        }
+
+        $fulfillmentOrderItems = [];
+        foreach ($order->getAllVisibleItems() as $item) {
+            if ((int)$item->getQtyOrdered() <= 0) {
+                continue;
+            }
+            $quantity = (int)$item->getQtyOrdered();
+            $body['line_items'][] = array_filter([
+                'id' => (string)$item->getItemId(),
+                'sku' => (string)$item->getSku(),
+                'description' => (string)$item->getName(),
+                'digital' => (bool)$item->getIsVirtual(),
+                'quantity' => $quantity,
+                'unit_price' => (float)$item->getPriceInclTax(),
+                'product_ref' => (string)$item->getItemId(),
+                'weight' => (float)$item->getWeight() > 0 && $weightUnit !== null ? [
+                    'value' => (float)$item->getWeight(),
+                    'unit' => $weightUnit,
+                ] : null,
+                'dangerous_goods' => false,
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+            if (!$item->getIsVirtual() && $quantity > 0) {
+                $fulfillmentOrderItems[] = [
+                    'id' => (string)$item->getItemId(),
+                    'quantity' => $quantity,
+                ];
+            }
+        }
+
+        if ($fulfillmentOrderItems) {
+            $body['fulfillment_orders'] = [array_filter([
+                'partner_fulfillment_order_reference' => $this->configuration->getFulfillmentOrderReference($order->getIncrementId()),
+                'location_id' => $this->configuration->getLocationCode(),
+                'line_items' => $fulfillmentOrderItems,
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            })];
+        }
+
+        return $body;
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param string $shipmentReference
+     * @return array
+     */
+    protected function getShipmentRequestBody(OrderInterface $order, $shipmentReference)
+    {
+        /** @var Address|null $shippingAddress */
+        $shippingAddress = $order->getShippingAddress() ?: $order->getBillingAddress();
+        $payment = $order->getPayment();
+        $paymentMethod = $payment ? $payment->getMethod() : null;
         $items = [];
+
         foreach ($order->getItems() as $item) {
             $items[] = [
                 'sku' => $item->getSku(),
@@ -249,47 +366,123 @@ class Client extends AbstractHttp
                 'quantity' => (float)$item->getQtyOrdered(),
                 'price' => [
                     'amount' => (float)$item->getPriceInclTax(),
-                    'currency' => $order->getOrderCurrencyCode()
+                    'currency' => $order->getOrderCurrencyCode(),
                 ],
-                'dangerous_goods' => false
+                'dangerous_goods' => false,
             ];
         }
 
         $body = [
             'entity_type' => 'FORWARD',
             'source' => [
-                'source_type'=> 'magento_connector'
+                'source_type' => 'magento_connector',
             ],
             'references' => [
-                'partner_order_reference' => $order->getIncrementId(),
-                'partner_shipment_reference' => $this->configuration->getShipmentReference($order->getIncrementId())
+                'partner_order_reference' => (string)$order->getIncrementId(),
+                'partner_shipment_reference' => $shipmentReference,
             ],
             'payment' => [
                 'payment_mode' => $paymentMethod === 'cashondelivery' ? 'CASH_ON_DELIVERY' : 'PRE_PAID',
-                'total_amount' => $order->getGrandTotal(),
-                'pending_amount' => $paymentMethod === 'cashondelivery' ? $order->getGrandTotal() : 0,
-                'currency' => $order->getOrderCurrencyCode()
+                'total_amount' => (float)$order->getGrandTotal(),
+                'pending_amount' => $paymentMethod === 'cashondelivery' ? (float)$order->getGrandTotal() : 0.0,
+                'currency' => $order->getOrderCurrencyCode(),
             ],
-            'delivery' => [
-                'delivery_type' => $this->configuration->getDeliveryType($order->getShippingMethod()),
-                'scheduled_date' => ''
-            ],
+            'delivery' => array_filter([
+                'delivery_type' => $this->configuration->getDeliveryType((string)$order->getShippingMethod()),
+                'scheduled_date' => '',
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            }),
             'items' => $items,
             'pickup' => [
-                'partner_location_code' => $this->configuration->getLocationCode()
+                'partner_location_code' => $this->configuration->getLocationCode(),
             ],
-            'dropoff' => [
-                'contact_name' => implode(" ", [$shippingAddress->getFirstname(), $shippingAddress->getLastname()]),
+        ];
+
+        if ($shippingAddress) {
+            $body['dropoff'] = array_filter([
+                'contact_name' => trim(implode(' ', array_filter([$shippingAddress->getFirstname(), $shippingAddress->getLastname()]))),
                 'contact_phone' => $shippingAddress->getTelephone(),
                 'contact_email' => $shippingAddress->getEmail(),
-                'address1' => implode(",", $shippingAddress->getStreet()),
+                'address1' => implode(', ', (array)$shippingAddress->getStreet()),
                 'city' => $shippingAddress->getCity(),
                 'state' => $shippingAddress->getRegion(),
                 'postcode' => $shippingAddress->getPostcode(),
                 'country' => $shippingAddress->getCountryId(),
-            ],
-            'merchant' => $this->configuration->getMerchant()
-        ];
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+        }
+
+        if ($this->configuration->getMerchant() !== '') {
+            $body['merchant'] = $this->configuration->getMerchant();
+        }
+
         return $body;
+    }
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    private function normalizePayload($value)
+    {
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        foreach ($value as $key => $item) {
+            $value[$key] = $this->normalizePayload($item);
+        }
+
+        if ($this->isAssoc($value)) {
+            ksort($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array $value
+     * @return bool
+     */
+    private function isAssoc(array $value)
+    {
+        return array_keys($value) !== range(0, count($value) - 1);
+    }
+
+    /**
+     * @param array $payload
+     * @return string
+     */
+    private function getPayloadHash(array $payload)
+    {
+        return hash('sha256', json_encode($this->normalizePayload($payload)));
+    }
+
+    /**
+     * @param string $method
+     * @param string $path
+     * @param array $body
+     * @param OrderInterface|null $order
+     * @return array
+     */
+    private function request($method, $path, array $body, OrderInterface $order = null)
+    {
+        try {
+            if ($order && $this->configuration->isDebugEnabled()) {
+                $this->logger->debug(
+                    sprintf('Carriyo %s Request Body %s %s', strtoupper($method), $order->getIncrementId(), print_r($body, true))
+                );
+            }
+
+            $response = $this->getClient()->{$method}($this->configuration->getUrl() . $path, ['json' => $body]);
+
+            return $this->serializer->unserialize($response->getBody()->getContents());
+        } catch (GuzzleException $exception) {
+            $this->logger->error(sprintf('Carriyo %s Exception %s', strtoupper($method), $exception->getMessage()));
+
+            return ['errors' => $exception->getMessage()];
+        }
     }
 }

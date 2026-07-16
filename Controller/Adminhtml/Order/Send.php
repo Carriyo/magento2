@@ -7,6 +7,7 @@
 namespace Carriyo\Shipment\Controller\Adminhtml\Order;
 
 
+use Carriyo\Shipment\Model\Configuration;
 use Carriyo\Shipment\Model\Helper;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\View\Result\Redirect;
@@ -25,35 +26,50 @@ class Send extends \Magento\Backend\App\Action
     private $helper;
 
     /**
+     * @var Configuration
+     */
+    private $configuration;
+
+    /**
      * Send constructor.
      * @param Action\Context $context
      * @param Helper $helper
      */
     public function __construct(
         Action\Context $context,
-        Helper $helper
+        Helper $helper,
+        Configuration $configuration
     )
     {
         $this->helper = $helper;
+        $this->configuration = $configuration;
         parent::__construct($context);
     }
 
     /**
-     * Send the shipment to Carriyo service.
+     * Send the order to Carriyo service.
      *
      * @return Redirect
      */
     public function execute()
     {
+        $orderId = $this->getRequest()->getParam('order_id');
+
         try {
-            $orderId = $this->getRequest()->getParam('order_id');
             if (!empty($orderId)) {
-                $shipmentId = $this->helper->sendOrder($orderId);
-                if (!empty($shipmentId)) {
-                    $this->messageManager->addSuccessMessage(
-                        'Successfully Created/Updated Shipment : ' . $shipmentId . ' in Carriyo.'
+                $syncReference = $this->helper->sendOrder($orderId);
+                $message = $this->configuration->isOrderMode()
+                    ? (
+                        $syncReference
+                            ? __('Successfully synced order to Carriyo. Order ID: %1', $syncReference)
+                            : __('Order was not synced to Carriyo.')
+                    )
+                    : (
+                        $syncReference
+                            ? __('Successfully created/updated shipment in Carriyo. Shipment ID: %1', $syncReference)
+                            : __('Shipment was not synced to Carriyo.')
                     );
-                }
+                $this->messageManager->addSuccessMessage($message);
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
