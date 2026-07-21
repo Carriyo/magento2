@@ -334,9 +334,12 @@ class Client extends AbstractHttp
         }
 
         if ($fulfillmentOrderItems) {
+            $locationCode = $this->configuration->getLocationCode();
             $body['fulfillment_orders'] = [array_filter([
                 'partner_fulfillment_order_reference' => $this->configuration->getFulfillmentOrderReference($order->getIncrementId()),
-                'location_id' => $this->configuration->getLocationCode(),
+                'fulfillment_location' => $locationCode !== '' ? [
+                    'partner_location_code' => $locationCode,
+                ] : null,
                 'line_items' => $fulfillmentOrderItems,
             ], static function ($value) {
                 return $value !== null && $value !== '';
