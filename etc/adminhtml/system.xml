@@ -39,7 +39,7 @@
                 <field id="location_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90"
                        translate="label comment" type="text">
                     <label>Default Location Code</label>
-                    <comment>Carriyo location code used as the default pickup location.</comment>
+                    <comment>Carriyo location code used as the default fulfillment location (order mode) or pickup location (shipment mode).</comment>
                     <config_path>carriyo/pickup_address/location_code</config_path>
                     <validate>validate-no-html-tags</validate>
                 </field>
